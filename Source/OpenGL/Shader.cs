@@ -17,16 +17,21 @@
 #endregion
 
 using OpenTK.Graphics.OpenGL4;
+using OpenTK.Mathematics;
 
 namespace Sharp8.OpenGL;
 
 /// <summary>
 /// Convenience class for handling GLSL raw-text shaders.
+/// <para/>
+/// Partially taken from the LearnOpenTK repository.
 /// </summary>
 public class Shader : IDisposable
 {
     private int _ShaderHandle;
     private bool _Disposed;
+    
+    private readonly Dictionary<string, int> _UniformLocations = new Dictionary<string, int>();
     
     /// <summary>
     /// Creates an instance of the <see cref="Shader"/> class.
@@ -58,6 +63,18 @@ public class Shader : IDisposable
         GL.DetachShader(_ShaderHandle, fragmentShader);
         GL.DeleteShader(fragmentShader);
         GL.DeleteShader(vertexShader);
+
+        int uniformCount;
+        GL.GetProgram(_ShaderHandle, GetProgramParameterName.ActiveUniforms, out uniformCount);
+
+        for (int i = 0; i < uniformCount; i++)
+        {
+            string key = GL.GetActiveUniform(_ShaderHandle, i, out _, out _);
+
+            int location = GL.GetUniformLocation(_ShaderHandle, key);
+            
+            _UniformLocations.Add(key, location);
+        }
     }
     
     ~Shader()
@@ -65,25 +82,56 @@ public class Shader : IDisposable
         GL.DeleteProgram(_ShaderHandle);
     }
     
-    public void SetUniform(string name, int value)
-    {
-        int location = GL.GetUniformLocation(_ShaderHandle, name);
-        
-        GL.Uniform1(location, value);
-    }
-
-    public void SetUniform(string name, float value)
-    {
-        int location = GL.GetUniformLocation(_ShaderHandle, name);
-        
-        GL.Uniform1(location, value);
-    }
-    
+    /// <summary>
+    /// Activates the shader.
+    /// </summary>
     public void Use()
     {
         GL.UseProgram(_ShaderHandle);
     }
     
+    /// <summary>
+    /// Sets an <see cref="int"/> uniform on the shader.
+    /// </summary>
+    /// <param name="Name">The name of the uniform.</param>
+    /// <param name="Value">The value to set the uniform to.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if there is no uniform named <paramref name="Name"/>.</exception>
+    public void SetUniform(string Name, int Value)
+    {
+        if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
+        GL.Uniform1(_UniformLocations[Name], Value);
+    }
+
+    /// <summary>
+    /// Sets a <see cref="float"/> uniform on the shader.
+    /// </summary>
+    /// <param name="Name">The name of the uniform.</param>
+    /// <param name="Value">The value to set the uniform to.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if there is no uniform named <paramref name="Name"/>.</exception>
+    public void SetUniform(string Name, float Value)
+    {
+        if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
+        GL.Uniform1(_UniformLocations[Name], Value);
+    }
+
+    /// <summary>
+    /// Sets a <see cref="Vector3"/> uniform on the shader.
+    /// </summary>
+    /// <param name="Name">The name of the uniform.</param>
+    /// <param name="Value">The value to set the uniform to.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if there is no uniform named <paramref name="Name"/>.</exception>
+    public void SetUniform(string Name, Vector3 Value)
+    {
+        if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
+        GL.Uniform3(_UniformLocations[Name], Value);
+    }
+    
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
     protected virtual void Dispose(bool Disposing)
     {
         if (!_Disposed)
@@ -92,11 +140,5 @@ public class Shader : IDisposable
 
             _Disposed = true;
         }
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
     }
 }
