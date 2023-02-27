@@ -19,7 +19,7 @@
 using System.Drawing;
 using Silk.NET.Maths;
 using Silk.NET.OpenGL;
-
+using Silk.NET.Windowing;
 using Shader = Sharp8.OpenGL.Shader;
 
 namespace Sharp8.Components;
@@ -163,7 +163,9 @@ public class Graphics
         _QuadShader!.Use();
         
         _Gl.DrawElements(PrimitiveType.Triangles, (uint)_QuadIndices.Length, DrawElementsType.UnsignedInt, null);
-
+        
+        MainProgram.AppWindow.SwapBuffers();
+        
         DrawFlag = false;
     }
     

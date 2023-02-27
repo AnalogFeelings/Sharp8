@@ -44,6 +44,7 @@ public class MainProgram
         windowOptions.Size = new Vector2D<int>(512, 256);
         windowOptions.Title = "Sharp8";
         windowOptions.FramesPerSecond = 60; // 60Hz
+        windowOptions.ShouldSwapAutomatically = false;
         
         AppWindow = Window.Create(windowOptions);
         
