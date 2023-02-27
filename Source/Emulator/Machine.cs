@@ -114,6 +114,9 @@ public class Machine
 
                         break;
                     }
+                    default:
+                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        break;
                 }
 
                 break;
@@ -318,6 +321,9 @@ public class Machine
 
                         break;
                     }
+                    default:
+                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        break;
                 }
 
                 break;
@@ -426,6 +432,9 @@ public class Machine
 
                         break;
                     }
+                    default:
+                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        break;
                 }
                 
                 break;
@@ -520,6 +529,39 @@ public class Machine
 
                         break;
                     }
+                    case 0x0055: // 0xFX55 - Stores from V0 to VX (including VX) in memory, starting at address I.
+                                 // The offset from I is increased by 1 for each value written.
+                    {
+                        int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
+
+                        for (int i = 0; i <= xRegisterIndex; i++)
+                        {
+                            MachineMemory[Index + i] = Registers[i];
+                        }
+
+                        Index += (ushort)(xRegisterIndex + 1);
+                        ProgramCounter += 2;
+                        
+                        break;
+                    }
+                    case 0x0065: // 0xFX65 - Fills from V0 to VX (including VX) with values from memory, starting at address I.
+                                 // The offset from I is increased by 1 for each value read.
+                    {
+                        int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
+
+                        for (int i = 0; i <= xRegisterIndex; i++)
+                        {
+                            Registers[i] = MachineMemory[Index + i];
+                        }
+                        
+                        Index += (ushort)(xRegisterIndex + 1);
+                        ProgramCounter += 2;
+                        
+                        break;
+                    }
+                    default:
+                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        break;
                 }
 
                 break;
