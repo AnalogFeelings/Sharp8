@@ -17,9 +17,7 @@
 #endregion
 
 using System.Drawing;
-using Silk.NET.Maths;
-using Silk.NET.OpenGL;
-using Silk.NET.Windowing;
+using OpenTK.Graphics.OpenGL4;
 using Shader = Sharp8.OpenGL.Shader;
 
 namespace Sharp8.Components;
@@ -35,11 +33,9 @@ public class Graphics
     
     #region OpenGL
     
-    private GL _Gl = default!;
-    
     private byte[,,] _TextureData = new byte[SCREEN_HEIGHT, SCREEN_WIDTH, 3];
 
-    private uint _TextureHandle;
+    private int _TextureHandle;
     
     private uint _QuadVbo;
     private uint _QuadVao;
@@ -66,58 +62,48 @@ public class Graphics
     /// <summary>
     /// Initializes the graphics module.
     /// </summary>
-    public unsafe void Initialize(GL GlContext)
+    public void Initialize()
     {
-        _Gl = GlContext;
-        
-        _Gl.Viewport(MainProgram.AppWindow.Size);
-
         // Initialize buffers.
-        _Gl.GenVertexArrays(1, out _QuadVao);
-        _Gl.GenBuffers(1, out _QuadVbo);
-        _Gl.GenBuffers(1, out _QuadEbo);
+        GL.GenVertexArrays(1, out _QuadVao);
+        GL.GenBuffers(1, out _QuadVbo);
+        GL.GenBuffers(1, out _QuadEbo);
         
-        _Gl.BindVertexArray(_QuadVao);
+        GL.BindVertexArray(_QuadVao);
         
         // Initialize VBO.
-        _Gl.BindBuffer(GLEnum.ArrayBuffer, _QuadVbo);
-        fixed (void* vertices = &_QuadVertices[0])
-        {
-            _Gl.BufferData(GLEnum.ArrayBuffer, (nuint)(_QuadVertices.Length * sizeof(float)), vertices, GLEnum.StaticDraw);
-        }
+        GL.BindBuffer(BufferTarget.ArrayBuffer, _QuadVbo);
+        GL.BufferData(BufferTarget.ArrayBuffer, _QuadVertices.Length * sizeof(float), _QuadVertices, BufferUsageHint.StaticDraw);
         
         // Initialize EBO.
-        _Gl.BindBuffer(GLEnum.ElementArrayBuffer, _QuadEbo);
-        fixed (void* indices = &_QuadIndices[0])
-        {
-            _Gl.BufferData(GLEnum.ElementArrayBuffer, (nuint)(_QuadIndices.Length * sizeof(uint)), indices, GLEnum.StaticDraw);
-        }
+        GL.BindBuffer(BufferTarget.ElementArrayBuffer, _QuadEbo);
+        GL.BufferData(BufferTarget.ElementArrayBuffer, _QuadIndices.Length * sizeof(uint), _QuadIndices, BufferUsageHint.StaticDraw);
         
         // Tell OpenGL about the vertex coords.
-        _Gl.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), null);
-        _Gl.EnableVertexAttribArray(0);
+        GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
+        GL.EnableVertexAttribArray(0);
         
         // Tell OpenGL about the UV coords.
-        _Gl.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-        _Gl.EnableVertexAttribArray(1);
+        GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
+        GL.EnableVertexAttribArray(1);
 
         // Create quad shader.
-        _QuadShader = new Shader(_Gl, "screen.vert", "screen.frag");
+        _QuadShader = new Shader("screen.vert", "screen.frag");
         
         // Initialize screen texture.
-        _TextureHandle = _Gl.GenTexture();
+        _TextureHandle = GL.GenTexture();
         
-        _Gl.BindTexture(GLEnum.Texture2D, _TextureHandle);
+        GL.BindTexture(TextureTarget.Texture2D, _TextureHandle);
         
-        _Gl.PixelStore(GLEnum.UnpackAlignment, 1);
-        _Gl.TexImage2D(GLEnum.Texture2D, 0, InternalFormat.Rgb, SCREEN_WIDTH, SCREEN_HEIGHT, 0, PixelFormat.Rgb, PixelType.UnsignedByte, null);
+        GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgb, SCREEN_WIDTH, SCREEN_HEIGHT, 0, PixelFormat.Rgb, PixelType.UnsignedByte, 0);
         
-        _Gl.TexParameter(GLEnum.Texture2D, GLEnum.TextureMagFilter, (int)GLEnum.Nearest);
-        _Gl.TexParameter(GLEnum.Texture2D, GLEnum.TextureMinFilter, (int)GLEnum.Nearest);
-        _Gl.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapS, (int)GLEnum.ClampToEdge);
-        _Gl.TexParameter(GLEnum.Texture2D, GLEnum.TextureWrapT, (int)GLEnum.ClampToEdge);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMagFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
         
-        _Gl.Enable(GLEnum.Texture2D);
+        GL.Enable(EnableCap.Texture2D);
     }
     
     /// <summary>
@@ -131,9 +117,9 @@ public class Graphics
     /// <summary>
     /// Renders to the screen if <see cref="DrawFlag"/> is true.
     /// </summary>
-    public unsafe void Render()
+    public bool Render()
     {
-        if (!DrawFlag) return;
+        if (!DrawFlag) return false;
 
         for (int y = 0; y < SCREEN_HEIGHT; y++)
         {
@@ -148,32 +134,20 @@ public class Graphics
             }
         }
         
-        _Gl.ActiveTexture(GLEnum.Texture0);
-        _Gl.BindTexture(GLEnum.Texture2D, _TextureHandle);
-
-        fixed (void* textureData = &_TextureData[0, 0, 0])
-        {
-            _Gl.TexSubImage2D(GLEnum.Texture2D, 0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, GLEnum.Rgb, GLEnum.UnsignedByte, textureData);
-        }
+        GL.ActiveTexture(TextureUnit.Texture0);
+        GL.BindTexture(TextureTarget.Texture2D, _TextureHandle);
         
-        _Gl.ClearColor(Color.Teal);
-        _Gl.Clear(ClearBufferMask.ColorBufferBit);
+        GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, PixelFormat.Rgb, PixelType.UnsignedByte, _TextureData);
         
-        _Gl.BindVertexArray(_QuadVao);
+        GL.Clear(ClearBufferMask.ColorBufferBit);
+        
+        GL.BindVertexArray(_QuadVao);
         _QuadShader!.Use();
         
-        _Gl.DrawElements(PrimitiveType.Triangles, (uint)_QuadIndices.Length, DrawElementsType.UnsignedInt, null);
-        
-        MainProgram.AppWindow.SwapBuffers();
-        
-        DrawFlag = false;
-    }
-    
-    public void WindowOnResize(Vector2D<int> NewSize)
-    {
-        _Gl.Viewport(NewSize);
+        GL.DrawElements(PrimitiveType.Triangles, _QuadIndices.Length, DrawElementsType.UnsignedInt, 0);
 
-        DrawFlag = true;
+        DrawFlag = false;
+        return true;
     }
 
     /// <summary>
@@ -181,12 +155,12 @@ public class Graphics
     /// </summary>
     public void Destroy()
     {
-        _Gl.DeleteVertexArrays(1, _QuadVao);
-        _Gl.DeleteBuffers(1, _QuadVbo);
-        _Gl.DeleteBuffers(1, _QuadEbo);
+        GL.DeleteVertexArrays(1, ref _QuadVao);
+        GL.DeleteBuffers(1, ref _QuadVbo);
+        GL.DeleteBuffers(1, ref _QuadEbo);
 
         _QuadShader?.Dispose();
         
-        _Gl.DeleteTexture(_TextureHandle);
+        GL.DeleteTexture(_TextureHandle);
     }
 }

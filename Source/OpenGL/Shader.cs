@@ -16,7 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
-using Silk.NET.OpenGL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Sharp8.OpenGL;
 
@@ -25,75 +25,70 @@ namespace Sharp8.OpenGL;
 /// </summary>
 public class Shader : IDisposable
 {
-    private uint _ShaderHandle;
+    private int _ShaderHandle;
     private bool _Disposed;
-    
-    private GL _Gl;
     
     /// <summary>
     /// Creates an instance of the <see cref="Shader"/> class.
     /// </summary>
-    /// <param name="GlContext">The OpenGL context.</param>
     /// <param name="VertexPath">The path to the vertex shader.</param>
     /// <param name="FragmentPath">The path to the fragment shader.</param>
-    public Shader(GL GlContext, string VertexPath, string FragmentPath)
+    public Shader(string VertexPath, string FragmentPath)
     {
-        _Gl = GlContext;
-
         string vertSource = File.ReadAllText(VertexPath);
         string fragSource = File.ReadAllText(FragmentPath);
 
-        uint vertexShader = _Gl.CreateShader(ShaderType.VertexShader);
-        _Gl.ShaderSource(vertexShader, vertSource);
+        int vertexShader = GL.CreateShader(ShaderType.VertexShader);
+        GL.ShaderSource(vertexShader, vertSource);
 
-        uint fragmentShader = _Gl.CreateShader(ShaderType.FragmentShader);
-        _Gl.ShaderSource(fragmentShader, fragSource);
+        int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
+        GL.ShaderSource(fragmentShader, fragSource);
 
-        _Gl.CompileShader(vertexShader);
-        _Gl.CompileShader(fragmentShader);
+        GL.CompileShader(vertexShader);
+        GL.CompileShader(fragmentShader);
 
-        _ShaderHandle = _Gl.CreateProgram();
+        _ShaderHandle = GL.CreateProgram();
 
-        _Gl.AttachShader(_ShaderHandle, vertexShader);
-        _Gl.AttachShader(_ShaderHandle, fragmentShader);
+        GL.AttachShader(_ShaderHandle, vertexShader);
+        GL.AttachShader(_ShaderHandle, fragmentShader);
 
-        _Gl.LinkProgram(_ShaderHandle);
+        GL.LinkProgram(_ShaderHandle);
 
-        _Gl.DetachShader(_ShaderHandle, vertexShader);
-        _Gl.DetachShader(_ShaderHandle, fragmentShader);
-        _Gl.DeleteShader(fragmentShader);
-        _Gl.DeleteShader(vertexShader);
+        GL.DetachShader(_ShaderHandle, vertexShader);
+        GL.DetachShader(_ShaderHandle, fragmentShader);
+        GL.DeleteShader(fragmentShader);
+        GL.DeleteShader(vertexShader);
     }
     
     ~Shader()
     {
-        _Gl.DeleteProgram(_ShaderHandle);
+        GL.DeleteProgram(_ShaderHandle);
     }
     
     public void SetUniform(string name, int value)
     {
-        int location = _Gl.GetUniformLocation(_ShaderHandle, name);
+        int location = GL.GetUniformLocation(_ShaderHandle, name);
         
-        _Gl.Uniform1(location, value);
+        GL.Uniform1(location, value);
     }
 
     public void SetUniform(string name, float value)
     {
-        int location = _Gl.GetUniformLocation(_ShaderHandle, name);
+        int location = GL.GetUniformLocation(_ShaderHandle, name);
         
-        _Gl.Uniform1(location, value);
+        GL.Uniform1(location, value);
     }
     
     public void Use()
     {
-        _Gl.UseProgram(_ShaderHandle);
+        GL.UseProgram(_ShaderHandle);
     }
     
     protected virtual void Dispose(bool Disposing)
     {
         if (!_Disposed)
         {
-            _Gl.DeleteProgram(_ShaderHandle);
+            GL.DeleteProgram(_ShaderHandle);
 
             _Disposed = true;
         }

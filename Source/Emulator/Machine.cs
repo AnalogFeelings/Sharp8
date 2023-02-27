@@ -17,7 +17,6 @@
 #endregion
 
 using Sharp8.Components;
-using Silk.NET.OpenGL;
 
 namespace Sharp8.Emulator;
 
@@ -61,30 +60,37 @@ public class Machine
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
 
-    public void Initialize(GL GlContext, string ProgramPath)
+    public void Initialize()
     {
         ProgramCounter = Memory.PROGRAM_OFFSET;
 
         // Load font into RAM.
         MachineMemory.LoadArray(MachineFont, 0, 0, MachineFont.Length);
 
-        FileInfo programInfo = new FileInfo(ProgramPath);
+        FileInfo programInfo = new FileInfo(Settings.ProgramPath);
         if (programInfo.Length > Memory.MEMORY_SIZE - Memory.PROGRAM_OFFSET)
         {
             throw new ArgumentOutOfRangeException($"The program file must be {Memory.MEMORY_SIZE - Memory.PROGRAM_OFFSET} bytes big at maximum.");
         }
 
-        byte[] programBytes = File.ReadAllBytes(ProgramPath);
+        byte[] programBytes = File.ReadAllBytes(Settings.ProgramPath);
         
         // Load program data into RAM.
         MachineMemory.LoadArray(programBytes, 0, Memory.PROGRAM_OFFSET, programBytes.Length);
 
-        MachineGraphics.Initialize(GlContext);
+        MachineGraphics.Initialize();
     }
 
     public void DoCycle()
     {
         CurrentOpcode = (ushort)(MachineMemory[ProgramCounter] << 8 | MachineMemory[ProgramCounter + 1]);
+        
+        if (DelayTimer > 0) DelayTimer--;
+        if (MachineSound.SoundTimer > 0)
+        {
+            // TODO: Beep here.
+            MachineSound.SoundTimer--;
+        }
 
         switch (CurrentOpcode & 0xF000)
         {
@@ -521,13 +527,6 @@ public class Machine
             default:
                 Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
                 break;
-        }
-
-        if (DelayTimer > 0) DelayTimer--;
-        if (MachineSound.SoundTimer > 0)
-        {
-            // TODO: Beep here.
-            MachineSound.SoundTimer--;
         }
 
         ProgramCounter &= 0x0FFF;

@@ -38,6 +38,14 @@ public class Memory
     }
 
     /// <summary>
+    /// Dumps all the memory contents into a file.
+    /// </summary>
+    public void DumpMemory()
+    {
+        File.WriteAllBytes("MemoryDump-" + DateTime.Now.ToString().Replace(':', '.') + ".bin", _InternalMemory);
+    }
+
+    /// <summary>
     /// Resets the RAM by setting it to 0.
     /// </summary>
     public void Reset()

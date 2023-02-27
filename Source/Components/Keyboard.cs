@@ -16,7 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
-using Silk.NET.Input;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Sharp8.Components;
 
@@ -24,41 +24,32 @@ public class Keyboard
 {
     public byte[] VirtualState = new byte[16];
 
-    private readonly Dictionary<Key, int> _Keymap = new Dictionary<Key, int>()
+    private readonly Dictionary<Keys, int> _Keymap = new Dictionary<Keys, int>()
     {
-        { Key.Number1, 0 },
-        { Key.Number2, 1 },
-        { Key.Number3, 2 },
-        { Key.Number4, 3 },
-        { Key.Q, 4 },
-        { Key.W, 5 },
-        { Key.E, 6 },
-        { Key.R, 7 },
-        { Key.A, 8 },
-        { Key.S, 9 },
-        { Key.D, 10 },
-        { Key.F, 11 },
-        { Key.Z, 12 },
-        { Key.X, 13 },
-        { Key.C, 14 },
-        { Key.V, 15 }
+        { Keys.D1, 0 },
+        { Keys.D2, 1 },
+        { Keys.D3, 2 },
+        { Keys.D4, 3 },
+        { Keys.Q, 4 },
+        { Keys.W, 5 },
+        { Keys.E, 6 },
+        { Keys.R, 7 },
+        { Keys.A, 8 },
+        { Keys.S, 9 },
+        { Keys.D, 10 },
+        { Keys.F, 11 },
+        { Keys.Z, 12 },
+        { Keys.X, 13 },
+        { Keys.C, 14 },
+        { Keys.V, 15 }
     };
 
-    public void KeyboardOnKeyDown(IKeyboard Source, Key Key, int Arg3)
+    public void ProcessEvent(Keys Source, bool IsDown)
     {
-        if (!_Keymap.ContainsKey(Key)) return;
+        if (!_Keymap.ContainsKey(Source)) return;
 
-        int keyIndex = _Keymap[Key];
+        int keyIndex = _Keymap[Source];
 
-        VirtualState[keyIndex] = 1;
-    }
-    
-    public void KeyboardOnKeyUp(IKeyboard Source, Key Key, int Arg3)
-    {
-        if (!_Keymap.ContainsKey(Key)) return;
-
-        int keyIndex = _Keymap[Key];
-
-        VirtualState[keyIndex] = 0;
+        VirtualState[keyIndex] = (byte)(IsDown ? 1 : 0);
     }
 }
