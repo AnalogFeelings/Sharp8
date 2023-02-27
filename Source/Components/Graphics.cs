@@ -16,12 +16,16 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
-using System.Drawing;
 using OpenTK.Graphics.OpenGL4;
 using Shader = Sharp8.OpenGL.Shader;
 
 namespace Sharp8.Components;
 
+/// <summary>
+/// Graphics module for the system.
+/// <para/>
+/// Handles displaying to the screen.
+/// </summary>
 public class Graphics
 {
     public const int SCREEN_WIDTH = 64;

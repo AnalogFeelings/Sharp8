@@ -20,6 +20,11 @@ using OpenTK.Windowing.GraphicsLibraryFramework;
 
 namespace Sharp8.Components;
 
+/// <summary>
+/// Keyboard module for the system.
+/// <para/>
+/// Translates normal PC keycodes into CHIP-8 keycodes.
+/// </summary>
 public class Keyboard
 {
     public byte[] VirtualState = new byte[16];

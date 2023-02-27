@@ -18,6 +18,10 @@
 
 namespace Sharp8.Components;
 
+/// <summary>
+/// The sound module of the CHIP-8 system.
+/// TODO
+/// </summary>
 public class Sound
 {
     public byte SoundTimer;

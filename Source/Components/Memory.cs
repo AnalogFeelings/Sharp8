@@ -18,6 +18,11 @@
 
 namespace Sharp8.Components;
 
+/// <summary>
+/// Memory module.
+/// <para/>
+/// Contains the system memory and utility functions.
+/// </summary>
 public class Memory
 {
     public const int MEMORY_SIZE = 4096;

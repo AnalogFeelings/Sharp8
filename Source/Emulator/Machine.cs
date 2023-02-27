@@ -20,6 +20,9 @@ using Sharp8.Components;
 
 namespace Sharp8.Emulator;
 
+/// <summary>
+/// The CPU of the CHIP-8 system.
+/// </summary>
 public class Machine
 {
     public ushort CurrentOpcode;
@@ -60,6 +63,10 @@ public class Machine
         0xF0, 0x80, 0xF0, 0x80, 0x80  // F
     };
 
+    /// <summary>
+    /// Initializes the CHIP-8 system.
+    /// </summary>
+    /// <exception cref="ArgumentOutOfRangeException">Thrown if a ROM file is too large to fit in the system memory.</exception>
     public void Initialize()
     {
         ProgramCounter = Memory.PROGRAM_OFFSET;
@@ -81,16 +88,12 @@ public class Machine
         MachineGraphics.Initialize();
     }
 
+    /// <summary>
+    /// Executes a single CPU cycle.
+    /// </summary>
     public void DoCycle()
     {
         CurrentOpcode = (ushort)(MachineMemory[ProgramCounter] << 8 | MachineMemory[ProgramCounter + 1]);
-        
-        if (DelayTimer > 0) DelayTimer--;
-        if (MachineSound.SoundTimer > 0)
-        {
-            // TODO: Beep here.
-            MachineSound.SoundTimer--;
-        }
 
         switch (CurrentOpcode & 0xF000)
         {
@@ -570,7 +573,12 @@ public class Machine
                 Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
                 break;
         }
-
-        ProgramCounter &= 0x0FFF;
+        
+        if (DelayTimer > 0) DelayTimer--;
+        if (MachineSound.SoundTimer > 0)
+        {
+            // TODO: Beep here.
+            MachineSound.SoundTimer--;
+        }
     }
 }
