@@ -17,6 +17,7 @@
 #endregion
 
 using System.Drawing;
+using Silk.NET.Maths;
 using Silk.NET.OpenGL;
 
 using Shader = Sharp8.OpenGL.Shader;
@@ -164,6 +165,13 @@ public class Graphics
         _Gl.DrawElements(PrimitiveType.Triangles, (uint)_QuadIndices.Length, DrawElementsType.UnsignedInt, null);
 
         DrawFlag = false;
+    }
+    
+    public void WindowOnResize(Vector2D<int> NewSize)
+    {
+        _Gl.Viewport(NewSize);
+
+        DrawFlag = true;
     }
 
     /// <summary>

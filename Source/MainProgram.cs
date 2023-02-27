@@ -49,7 +49,6 @@ public class MainProgram
         
         AppWindow.Load += WindowOnLoad;
         AppWindow.Render += WindowOnRender;
-        AppWindow.Resize += WindowOnResize;
         AppWindow.Closing += WindowOnClosing;
 
         AppWindow.Run();
@@ -67,6 +66,8 @@ public class MainProgram
         Gl = GL.GetApi(AppWindow);
 
         Machine.Initialize(Gl, ProgramPath);
+
+        AppWindow.Resize += Machine.MachineGraphics.WindowOnResize;
     }
     
     private void WindowOnRender(double Obj)
@@ -74,13 +75,6 @@ public class MainProgram
         Machine.DoCycle();
         
         Machine.MachineGraphics.Render();
-    }
-    
-    private void WindowOnResize(Vector2D<int> NewSize)
-    {
-        Gl!.Viewport(NewSize);
-
-        Machine.MachineGraphics.DrawFlag = true;
     }
 
     private void WindowOnClosing()
