@@ -59,9 +59,9 @@ public class EmulatorWindow : GameWindow
 
     protected override void OnClosing(CancelEventArgs e)
     {
-        base.OnClosing(e);
-        
         Machine.MachineGraphics.Destroy();
+        
+        base.OnClosing(e);
     }
 
     protected override void OnResize(ResizeEventArgs e)
