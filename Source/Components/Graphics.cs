@@ -16,6 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using Matcha;
 using OpenTK.Graphics.OpenGL4;
 using Sharp8.Utilities;
 
@@ -68,20 +69,30 @@ public class Graphics
     /// </summary>
     public void Initialize()
     {
+        Logger.Log("Initializing OpenGL buffer objects...", LogSeverity.Debug);
+        
         // Initialize buffers.
         GL.GenVertexArrays(1, out _QuadVao);
         GL.GenBuffers(1, out _QuadVbo);
         GL.GenBuffers(1, out _QuadEbo);
         
+        Logger.Log("Initializing screen VAO...", LogSeverity.Debug);
+        
         GL.BindVertexArray(_QuadVao);
+        
+        Logger.Log("Initializing screen VBO...", LogSeverity.Debug);
         
         // Initialize VBO.
         GL.BindBuffer(BufferTarget.ArrayBuffer, _QuadVbo);
         GL.BufferData(BufferTarget.ArrayBuffer, _QuadVertices.Length * sizeof(float), _QuadVertices, BufferUsageHint.StaticDraw);
         
+        Logger.Log("Initializing screen EBO...", LogSeverity.Debug);
+        
         // Initialize EBO.
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _QuadEbo);
         GL.BufferData(BufferTarget.ElementArrayBuffer, _QuadIndices.Length * sizeof(uint), _QuadIndices, BufferUsageHint.StaticDraw);
+        
+        Logger.Log("Informing OpenGL about the vertex format...", LogSeverity.Debug);
         
         // Tell OpenGL about the vertex coords.
         GL.VertexAttribPointer(0, 3, VertexAttribPointerType.Float, false, 5 * sizeof(float), 0);
@@ -90,9 +101,13 @@ public class Graphics
         // Tell OpenGL about the UV coords.
         GL.VertexAttribPointer(1, 2, VertexAttribPointerType.Float, false, 5 * sizeof(float), 3 * sizeof(float));
         GL.EnableVertexAttribArray(1);
+        
+        Logger.Log("Initializing screen shader object...", LogSeverity.Debug);
 
         // Create quad shader.
         _QuadShader = new Shader("screen.vert", "screen.frag");
+        
+        Logger.Log("Initializing screen texture handle...", LogSeverity.Debug);
         
         // Initialize screen texture.
         _TextureHandle = GL.GenTexture();
@@ -108,6 +123,8 @@ public class Graphics
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
         
         GL.Enable(EnableCap.Texture2D);
+        
+        Logger.Log("Graphics initialization complete.", LogSeverity.Debug);
     }
     
     /// <summary>
