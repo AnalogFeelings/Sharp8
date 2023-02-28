@@ -16,7 +16,9 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using Matcha;
 using Sharp8.Components;
+using Sharp8.Utilities;
 
 namespace Sharp8.Emulator;
 
@@ -69,6 +71,8 @@ public class Machine
     /// <exception cref="ArgumentOutOfRangeException">Thrown if a ROM file is too large to fit in the system memory.</exception>
     public void Initialize()
     {
+        Logger.Log("Initializing emulator...", LogSeverity.Information);
+        
         ProgramCounter = Memory.PROGRAM_OFFSET;
 
         // Load font into RAM.
@@ -77,13 +81,18 @@ public class Machine
         FileInfo programInfo = new FileInfo(Settings.ProgramPath);
         if (programInfo.Length > Memory.MAX_PROGRAM_SIZE)
         {
-            throw new ArgumentOutOfRangeException($"The program file must be {Memory.MAX_PROGRAM_SIZE} bytes big at maximum.");
+            Logger.Panic($"The program file must be {Memory.MAX_PROGRAM_SIZE} bytes big at maximum.");
         }
 
         byte[] programBytes = File.ReadAllBytes(Settings.ProgramPath);
         
+        Logger.Log("Loading program into memory...", LogSeverity.Information);
+        
         // Load program data into RAM.
         MachineMemory.LoadArray(programBytes, 0, Memory.PROGRAM_OFFSET, programBytes.Length);
+        
+        Logger.Log("Successfully loaded program into emulator memory.", LogSeverity.Success);
+        Logger.Log("Initializing graphics component...", LogSeverity.Information);
 
         MachineGraphics.Initialize();
     }
@@ -117,7 +126,7 @@ public class Machine
                         break;
                     }
                     default:
-                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        Logger.Log($"Unknown opcode! 0x{CurrentOpcode:X}", LogSeverity.Warning);
                         break;
                 }
 
@@ -324,7 +333,7 @@ public class Machine
                         break;
                     }
                     default:
-                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        Logger.Log($"Unknown opcode! 0x{CurrentOpcode:X}", LogSeverity.Warning);
                         break;
                 }
 
@@ -435,7 +444,7 @@ public class Machine
                         break;
                     }
                     default:
-                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        Logger.Log($"Unknown opcode! 0x{CurrentOpcode:X}", LogSeverity.Warning);
                         break;
                 }
                 
@@ -562,14 +571,14 @@ public class Machine
                         break;
                     }
                     default:
-                        Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                        Logger.Log($"Unknown opcode! 0x{CurrentOpcode:X}", LogSeverity.Warning);
                         break;
                 }
 
                 break;
             }
             default:
-                Console.WriteLine($"Unknown opcode! 0x{CurrentOpcode:X}");
+                Logger.Log($"Unknown opcode! 0x{CurrentOpcode:X}", LogSeverity.Warning);
                 break;
         }
         
