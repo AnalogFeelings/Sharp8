@@ -17,7 +17,7 @@
 #endregion
 
 using OpenTK.Graphics.OpenGL4;
-using Shader = Sharp8.OpenGL.Shader;
+using Sharp8.Utilities;
 
 namespace Sharp8.Components;
 

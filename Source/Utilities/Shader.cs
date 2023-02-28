@@ -19,7 +19,7 @@
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Sharp8.OpenGL;
+namespace Sharp8.Utilities;
 
 /// <summary>
 /// Convenience class for handling GLSL raw-text shaders.
