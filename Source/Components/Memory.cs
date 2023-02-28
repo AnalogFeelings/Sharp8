@@ -27,7 +27,9 @@ public class Memory
 {
     public const int MEMORY_SIZE = 4096;
     public const int PROGRAM_OFFSET = 512;
-    
+
+    public const int MAX_PROGRAM_SIZE = MEMORY_SIZE - PROGRAM_OFFSET;
+
     private readonly byte[] _InternalMemory = new byte[MEMORY_SIZE];
 
     /// <summary>

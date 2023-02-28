@@ -75,9 +75,9 @@ public class Machine
         MachineMemory.LoadArray(MachineFont, 0, 0, MachineFont.Length);
 
         FileInfo programInfo = new FileInfo(Settings.ProgramPath);
-        if (programInfo.Length > Memory.MEMORY_SIZE - Memory.PROGRAM_OFFSET)
+        if (programInfo.Length > Memory.MAX_PROGRAM_SIZE)
         {
-            throw new ArgumentOutOfRangeException($"The program file must be {Memory.MEMORY_SIZE - Memory.PROGRAM_OFFSET} bytes big at maximum.");
+            throw new ArgumentOutOfRangeException($"The program file must be {Memory.MAX_PROGRAM_SIZE} bytes big at maximum.");
         }
 
         byte[] programBytes = File.ReadAllBytes(Settings.ProgramPath);
