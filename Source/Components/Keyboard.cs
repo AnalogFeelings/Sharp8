@@ -27,28 +27,39 @@ namespace Sharp8.Components;
 /// </summary>
 public class Keyboard
 {
+    /// <summary>
+    /// Holds the current state of the keyboard in the CHIP-8 machine.
+    /// </summary>
     public byte[] VirtualState = new byte[16];
 
+    /// <remarks>
+    /// For a better illustration of the keyboard layout, go to http://devernay.free.fr/hacks/chip8/C8TECH10.HTM#keyboard
+    /// </remarks>
     private readonly Dictionary<Keys, int> _Keymap = new Dictionary<Keys, int>()
     {
-        { Keys.D1, 0 },
-        { Keys.D2, 1 },
-        { Keys.D3, 2 },
-        { Keys.D4, 3 },
-        { Keys.Q, 4 },
-        { Keys.W, 5 },
-        { Keys.E, 6 },
-        { Keys.R, 7 },
-        { Keys.A, 8 },
-        { Keys.S, 9 },
-        { Keys.D, 10 },
-        { Keys.F, 11 },
-        { Keys.Z, 12 },
-        { Keys.X, 13 },
-        { Keys.C, 14 },
-        { Keys.V, 15 }
+        { Keys.D1, 0 }, // 1
+        { Keys.D2, 1 }, // 2
+        { Keys.D3, 2 }, // 3
+        { Keys.D4, 3 }, // C
+        { Keys.Q, 4 }, // 4
+        { Keys.W, 5 }, // 5
+        { Keys.E, 6 }, // 6
+        { Keys.R, 7 }, // D
+        { Keys.A, 8 }, // 7
+        { Keys.S, 9 }, // 8
+        { Keys.D, 10 }, // 9
+        { Keys.F, 11 }, // E
+        { Keys.Z, 12 }, // A
+        { Keys.X, 13 }, // 0
+        { Keys.C, 14 }, // B
+        { Keys.V, 15 } // F
     };
 
+    /// <summary>
+    /// Processes an input event and sets the virtual state of the keyboard accordingly.
+    /// </summary>
+    /// <param name="Source">The key that was updated.</param>
+    /// <param name="IsDown">If the key is pressed down.</param>
     public void ProcessEvent(Keys Source, bool IsDown)
     {
         if (!_Keymap.ContainsKey(Source)) return;
