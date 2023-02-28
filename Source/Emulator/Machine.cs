@@ -104,7 +104,6 @@ public class Machine
                     case 0x0000: // 0x00E0 - Clear screen.
                     {
                         MachineGraphics.Reset();
-                        MachineGraphics.DrawFlag = true;
 
                         ProgramCounter += 2;
 

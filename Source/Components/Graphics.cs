@@ -111,11 +111,12 @@ public class Graphics
     }
     
     /// <summary>
-    /// Resets the graphics by clearing the framebuffer.
+    /// Resets the graphics by clearing the framebuffer and sets the <see cref="DrawFlag"/> to true.
     /// </summary>
     public void Reset()
     {
         Array.Clear(Framebuffer, 0, Framebuffer.Length);
+        DrawFlag = true;
     }
 
     /// <summary>
