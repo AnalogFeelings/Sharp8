@@ -18,10 +18,12 @@
 
 using System.ComponentModel;
 using System.Drawing;
+using Matcha;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
+using Sharp8.Utilities;
 
 namespace Sharp8.Emulator;
 
@@ -41,6 +43,8 @@ public class EmulatorWindow : GameWindow
         Machine.Initialize();
 
         Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
+        
+        Logger.Log("The emulator has initialized successfully. Execution will begin.", LogSeverity.Success);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
