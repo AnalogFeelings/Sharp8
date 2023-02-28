@@ -39,6 +39,8 @@ public class EmulatorWindow : GameWindow
         base.OnLoad();
         
         Machine.Initialize();
+
+        Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)
