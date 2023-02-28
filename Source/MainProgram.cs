@@ -31,9 +31,9 @@ public class MainProgram
     public static void Main(string[] Args)
     {
         if (Args.Length == 0)
-            Panic("You must provide the path to the CHIP-8 program to run.");
+            Logger.Panic("You must provide the path to the CHIP-8 program to run.");
         if(!File.Exists(Args[0]))
-            Panic("You must provide a valid path to the CHIP-8 program to run. Check your spelling.");
+            Logger.Panic("You must provide a valid path to the CHIP-8 program to run. Check your spelling.");
 
         string programVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(2);
         Logger.Log($"Sharp8 v{programVersion} by AestheticalZ https://github.com/AestheticalZ", LogSeverity.Information);
@@ -55,16 +55,5 @@ public class MainProgram
         {
             emulatorWindow.Run();
         }
-    }
-
-    /// <summary>
-    /// Logs a fatal error to the console and exits with an error code.
-    /// </summary>
-    /// <param name="Message">The message to print out.</param>
-    private static void Panic(string Message)
-    {
-        Logger.Log(Message, LogSeverity.Fatal);
-        
-        Environment.Exit(-1);
     }
 }

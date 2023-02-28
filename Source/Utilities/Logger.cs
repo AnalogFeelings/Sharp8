@@ -16,6 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using System.Diagnostics;
 using Matcha;
 
 namespace Sharp8.Utilities;
@@ -51,5 +52,21 @@ public static class Logger
     public static void Log(string Message, LogSeverity Severity)
     {
         _Logger.Log(Message, Severity);
+    }
+    
+    /// <summary>
+    /// Logs a fatal error to the console and exits with an error code.
+    /// </summary>
+    /// <param name="Message">The message to print out.</param>
+    /// <remarks>
+    /// This method will also break into the debugger, if it is connected.
+    /// </remarks>
+    public static void Panic(string Message)
+    {
+        _Logger.Log(Message, LogSeverity.Fatal);
+        
+        Debugger.Break();
+        
+        Environment.Exit(-1);
     }
 }
