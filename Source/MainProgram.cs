@@ -16,26 +16,35 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using System.Reflection;
+using Matcha;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using Sharp8.Emulator;
+using Sharp8.Utilities;
+
 namespace Sharp8;
 
 public class MainProgram
 {
     public static void Main(string[] Args)
     {
-        if (Args.Length == 0 || !File.Exists(Args[0]))
-            throw new ArgumentException("You must provide the path to the CHIP-8 program to run.");
+        if (Args.Length == 0)
+            Panic("You must provide the path to the CHIP-8 program to run.");
+        if(!File.Exists(Args[0]))
+            Panic("You must provide a valid path to the CHIP-8 program to run. Check your spelling.");
+
+        string programVersion = Assembly.GetExecutingAssembly().GetName().Version!.ToString(2);
+        Logger.Log($"Sharp8 v{programVersion} by AestheticalZ https://github.com/AestheticalZ", LogSeverity.Information);
 
         Settings.ProgramPath = Args[0];
-        
+
         NativeWindowSettings windowSettings = new NativeWindowSettings()
         {
             Size = new Vector2i(512, 256),
             Title = "Sharp8",
-            Flags = ContextFlags.ForwardCompatible
+            Flags = ContextFlags.ForwardCompatible // Supposedly needed for macOS compatibility.
         };
         
         GameWindowSettings gameWindowSettings = GameWindowSettings.Default;
@@ -46,5 +55,16 @@ public class MainProgram
         {
             emulatorWindow.Run();
         }
+    }
+
+    /// <summary>
+    /// Logs a fatal error to the console and exits with an error code.
+    /// </summary>
+    /// <param name="Message">The message to print out.</param>
+    private static void Panic(string Message)
+    {
+        Logger.Log(Message, LogSeverity.Fatal);
+        
+        Environment.Exit(-1);
     }
 }

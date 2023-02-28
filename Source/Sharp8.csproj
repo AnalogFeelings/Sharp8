@@ -5,6 +5,8 @@
         <TargetFramework>net7.0</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
         <Nullable>enable</Nullable>
+        <AssemblyVersion>0.1</AssemblyVersion>
+        <FileVersion>0.1</FileVersion>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
@@ -25,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="MatchaLogger" Version="1.2.1" />
       <PackageReference Include="OpenTK" Version="4.7.7" />
     </ItemGroup>
 
