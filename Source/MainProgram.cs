@@ -49,8 +49,7 @@ public class MainProgram
             Title = "Sharp8",
             Icon = GetWindowIcon(),
             API = ContextAPI.OpenGL,
-            APIVersion = new Version(4, 3),
-            Flags = ContextFlags.ForwardCompatible // Supposedly needed for macOS compatibility.
+            APIVersion = new Version(4, 3)
         };
         
         GameWindowSettings gameWindowSettings = GameWindowSettings.Default;
