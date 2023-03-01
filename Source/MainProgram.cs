@@ -48,6 +48,8 @@ public class MainProgram
             Size = new Vector2i(512, 256),
             Title = "Sharp8",
             Icon = GetWindowIcon(),
+            API = ContextAPI.OpenGL,
+            APIVersion = new Version(4, 3),
             Flags = ContextFlags.ForwardCompatible // Supposedly needed for macOS compatibility.
         };
         
