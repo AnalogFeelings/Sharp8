@@ -17,12 +17,15 @@
 #endregion
 
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Matcha;
 using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
+using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using Sharp8.Emulator;
 using Sharp8.Utilities;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace Sharp8;
 
@@ -44,6 +47,7 @@ public class MainProgram
         {
             Size = new Vector2i(512, 256),
             Title = "Sharp8",
+            Icon = GetWindowIcon(),
             Flags = ContextFlags.ForwardCompatible // Supposedly needed for macOS compatibility.
         };
         
@@ -54,6 +58,38 @@ public class MainProgram
         using (EmulatorWindow emulatorWindow = new EmulatorWindow(gameWindowSettings, windowSettings))
         {
             emulatorWindow.Run();
+        }
+    }
+
+    /// <summary>
+    /// Read the app icon and return it as a <see cref="WindowIcon"/>.
+    /// </summary>
+    /// <remarks>
+    /// Returns null if the icon fails to load. This shouldn't cause an issue with OpenTK.
+    /// </remarks>
+    private static WindowIcon? GetWindowIcon()
+    {
+        try
+        {
+            Assembly currentAssembly = Assembly.GetExecutingAssembly();
+            string iconName = currentAssembly.GetManifestResourceNames().Single(x => x.EndsWith("window_icon.png"));
+
+            Image<Rgba32> loadedImage;
+            using (Stream imageStream = currentAssembly.GetManifestResourceStream(iconName)!)
+            {
+                loadedImage = (Image<Rgba32>)Image.Load(imageStream);
+            }
+            
+            byte[] imageBytes = new byte[loadedImage.Width * loadedImage.Height * Unsafe.SizeOf<Rgba32>()];
+            loadedImage.CopyPixelDataTo(imageBytes);
+
+            return new WindowIcon(new OpenTK.Windowing.Common.Input.Image(loadedImage.Width, loadedImage.Height, imageBytes));
+        }
+        catch (Exception e)
+        {
+            Logger.Log($"Error loading window icon. Exception:\n{e}", LogSeverity.Warning);
+            
+            return null;
         }
     }
 }

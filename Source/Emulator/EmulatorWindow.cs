@@ -17,13 +17,13 @@
 #endregion
 
 using System.ComponentModel;
-using System.Drawing;
 using Matcha;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Sharp8.Utilities;
+using Size = System.Drawing.Size;
 
 namespace Sharp8.Emulator;
 
