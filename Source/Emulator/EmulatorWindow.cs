@@ -39,12 +39,20 @@ public class EmulatorWindow : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
-        
-        Machine.Initialize();
 
-        Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
+        try
+        {
+            Machine.Initialize();
+
+            Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
         
-        Logger.Log("The emulator has initialized successfully. Execution will begin.", LogSeverity.Success);
+            Logger.Log("The emulator has initialized successfully. Execution will begin.", LogSeverity.Success);
+        }
+        catch (Exception e)
+        {
+            // TODO: Find a better way to have a sort of "centralized" exception handler.
+            Logger.Panic($"An exception happened during emulator initialization.\n{e}");
+        }
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)

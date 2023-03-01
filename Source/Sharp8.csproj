@@ -19,15 +19,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <None Update="screen.frag">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-      <None Update="screen.vert">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
-
-    <ItemGroup>
       <PackageReference Include="MatchaLogger" Version="1.2.1" />
       <PackageReference Include="OpenTK" Version="4.7.7" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.0.0" />
@@ -43,6 +34,10 @@
 
     <ItemGroup>
       <EmbeddedResource Include="Resources\Icons\window_icon.png" />
+      <None Remove="Resources\Shaders\screen.frag" />
+      <EmbeddedResource Include="Resources\Shaders\screen.frag" />
+      <None Remove="Resources\Shaders\screen.vert" />
+      <EmbeddedResource Include="Resources\Shaders\screen.vert" />
     </ItemGroup>
 
 </Project>

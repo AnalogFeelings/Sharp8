@@ -16,13 +16,14 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using System.Reflection;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
 namespace Sharp8.Utilities;
 
 /// <summary>
-/// Convenience class for handling GLSL raw-text shaders.
+/// Convenience class for handling GLSL raw-text shaders from the Assembly resources.
 /// <para/>
 /// Partially taken from the LearnOpenTK repository.
 /// </summary>
@@ -36,12 +37,39 @@ public class Shader : IDisposable
     /// <summary>
     /// Creates an instance of the <see cref="Shader"/> class.
     /// </summary>
-    /// <param name="VertexPath">The path to the vertex shader.</param>
-    /// <param name="FragmentPath">The path to the fragment shader.</param>
-    public Shader(string VertexPath, string FragmentPath)
+    /// <param name="VertexFilename">The filename of the vertex shader.</param>
+    /// <param name="FragmentFilename">The filename of the fragment shader.</param>
+    /// <remarks>
+    /// This can only load from integrated resources.
+    /// </remarks>
+    public Shader(string VertexFilename, string FragmentFilename)
     {
-        string vertSource = File.ReadAllText(VertexPath);
-        string fragSource = File.ReadAllText(FragmentPath);
+        Assembly currentAssembly = Assembly.GetExecutingAssembly();
+        
+        string vertName = currentAssembly.GetManifestResourceNames().Single(x => x.EndsWith(VertexFilename));
+        string fragName = currentAssembly.GetManifestResourceNames().Single(x => x.EndsWith(FragmentFilename));
+
+        string vertSource;
+        string fragSource;
+
+        using (Stream? vertStream = currentAssembly.GetManifestResourceStream(vertName))
+        {
+            if (vertStream == null) 
+                throw new FileNotFoundException($"The vertex shader \"{VertexFilename}\" was not found in the program's resources.");
+
+            StreamReader vertReader = new StreamReader(vertStream);
+
+            vertSource = vertReader.ReadToEnd();
+        }
+        using (Stream? fragStream = currentAssembly.GetManifestResourceStream(fragName))
+        {
+            if (fragStream == null) 
+                throw new FileNotFoundException($"The fragment shader \"{FragmentFilename}\" was not found in the program's resources.");
+
+            StreamReader fragReader = new StreamReader(fragStream);
+
+            fragSource = fragReader.ReadToEnd();
+        }
 
         int vertexShader = GL.CreateShader(ShaderType.VertexShader);
         GL.ShaderSource(vertexShader, vertSource);
