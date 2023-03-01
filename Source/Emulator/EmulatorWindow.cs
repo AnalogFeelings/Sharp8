@@ -42,6 +42,11 @@ public class EmulatorWindow : GameWindow
 
         try
         {
+#if DEBUG
+            // Initialize OpenGL logging only in Debug configuration.
+            Logger.InitializeGlLogging();
+#endif
+            
             Machine.Initialize();
 
             Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);

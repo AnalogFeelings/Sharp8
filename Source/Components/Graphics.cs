@@ -76,17 +76,11 @@ public class Graphics
         GL.GenBuffers(1, out _QuadVbo);
         GL.GenBuffers(1, out _QuadEbo);
         
-        Logger.Log("Initializing screen VAO...", LogSeverity.Debug);
-        
         GL.BindVertexArray(_QuadVao);
-        
-        Logger.Log("Initializing screen VBO...", LogSeverity.Debug);
         
         // Initialize VBO.
         GL.BindBuffer(BufferTarget.ArrayBuffer, _QuadVbo);
         GL.BufferData(BufferTarget.ArrayBuffer, _QuadVertices.Length * sizeof(float), _QuadVertices, BufferUsageHint.StaticDraw);
-        
-        Logger.Log("Initializing screen EBO...", LogSeverity.Debug);
         
         // Initialize EBO.
         GL.BindBuffer(BufferTarget.ElementArrayBuffer, _QuadEbo);
@@ -121,8 +115,6 @@ public class Graphics
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-        
-        GL.Enable(EnableCap.Texture2D);
         
         Logger.Log("Graphics initialization complete.", LogSeverity.Debug);
     }

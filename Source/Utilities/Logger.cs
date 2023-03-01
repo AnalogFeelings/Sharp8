@@ -17,7 +17,9 @@
 #endregion
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using Matcha;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Sharp8.Utilities;
 
@@ -27,6 +29,9 @@ namespace Sharp8.Utilities;
 public static class Logger
 {
     private static readonly MatchaLogger _Logger;
+
+    private static DebugProc _DebugProcCallback = GlDebugCallback;
+    private static GCHandle _DebugProcCallbackHandle;
 
     static Logger()
     {
@@ -39,6 +44,19 @@ public static class Logger
         };
 
         _Logger = new MatchaLogger(loggerSettings);
+    }
+
+    /// <summary>
+    /// Initializes OpenGL logging callbacks.
+    /// </summary>
+    public static void InitializeGlLogging()
+    {
+        // Set up OpenGL information logging.
+        _DebugProcCallbackHandle = GCHandle.Alloc(_DebugProcCallback);
+        
+        GL.DebugMessageCallback(_DebugProcCallback, IntPtr.Zero);
+        GL.Enable(EnableCap.DebugOutput);
+        GL.Enable(EnableCap.DebugOutputSynchronous);
     }
 
     /// <summary>
@@ -68,5 +86,34 @@ public static class Logger
         Debugger.Break();
         
         Environment.Exit(-1);
+    }
+    
+    private static void GlDebugCallback(DebugSource Source, DebugType Type, int Id,
+        DebugSeverity Severity, int Length, IntPtr Message, IntPtr UserParam)
+    {
+        string messageString = Marshal.PtrToStringAnsi(Message, Length);
+        
+        LogSeverity matchaSeverity;
+        switch (Severity)
+        {
+            case DebugSeverity.DebugSeverityHigh:
+                matchaSeverity = LogSeverity.Fatal;
+                break;
+            case DebugSeverity.DebugSeverityMedium:
+            case DebugSeverity.DebugSeverityLow:
+                matchaSeverity = LogSeverity.Warning;
+                break;
+            case DebugSeverity.DebugSeverityNotification:
+                matchaSeverity = LogSeverity.Information;
+                break;
+            default:
+                matchaSeverity = LogSeverity.Information;
+                break;
+        }
+        
+        if(matchaSeverity == LogSeverity.Fatal)
+            Panic($"({Source}) {messageString}");
+        else
+            Log($"({Source}) {messageString}", matchaSeverity);
     }
 }

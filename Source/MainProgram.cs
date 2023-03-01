@@ -49,7 +49,8 @@ public class MainProgram
             Title = "Sharp8",
             Icon = GetWindowIcon(),
             API = ContextAPI.OpenGL,
-            APIVersion = new Version(4, 3)
+            APIVersion = new Version(4, 3),
+            Profile = ContextProfile.Core
         };
         
         GameWindowSettings gameWindowSettings = GameWindowSettings.Default;
