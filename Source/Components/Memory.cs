@@ -16,6 +16,8 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using System.Globalization;
+
 namespace Sharp8.Components;
 
 /// <summary>
@@ -49,7 +51,10 @@ public class Memory
     /// </summary>
     public void DumpMemory()
     {
-        File.WriteAllBytes("MemoryDump-" + DateTime.Now.ToString().Replace(':', '.') + ".bin", _InternalMemory);
+        string ntfsSafeDate = DateTime.Now.ToString(CultureInfo.CurrentCulture).Replace(':', '-');
+        string dumpFilename = string.Format("MemoryDump - {0} - {1}.bin", Path.GetFileName(Settings.ProgramPath), ntfsSafeDate);
+            
+        File.WriteAllBytes(dumpFilename, _InternalMemory);
     }
 
     /// <summary>
