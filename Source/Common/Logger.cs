@@ -112,8 +112,8 @@ public static class Logger
         }
         
         if(matchaSeverity == LogSeverity.Fatal)
-            Panic($"({Source}) {messageString}");
+            Panic(messageString);
         else
-            Log($"({Source}) {messageString}", matchaSeverity);
+            Log(messageString, matchaSeverity);
     }
 }
