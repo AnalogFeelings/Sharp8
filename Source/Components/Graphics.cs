@@ -18,7 +18,8 @@
 
 using Matcha;
 using OpenTK.Graphics.OpenGL4;
-using Sharp8.Utilities;
+using Sharp8.Common;
+using Sharp8.Common.Graphics;
 
 namespace Sharp8.Components;
 

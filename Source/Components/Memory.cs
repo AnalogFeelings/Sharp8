@@ -17,6 +17,7 @@
 #endregion
 
 using System.Globalization;
+using Sharp8.Common;
 
 namespace Sharp8.Components;
 

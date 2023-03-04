@@ -17,8 +17,9 @@
 #endregion
 
 using Matcha;
+using Sharp8.Common;
 using Sharp8.Components;
-using Sharp8.Utilities;
+using Sharp8.Common.Graphics;
 
 namespace Sharp8.Emulator;
 

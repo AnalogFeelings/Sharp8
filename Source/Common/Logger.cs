@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 using Matcha;
 using OpenTK.Graphics.OpenGL4;
 
-namespace Sharp8.Utilities;
+namespace Sharp8.Common;
 
 /// <summary>
 /// Class used for outputting useful logging details to the console.

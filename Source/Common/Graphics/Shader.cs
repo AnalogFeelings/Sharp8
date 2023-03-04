@@ -20,7 +20,7 @@ using System.Reflection;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Mathematics;
 
-namespace Sharp8.Utilities;
+namespace Sharp8.Common.Graphics;
 
 /// <summary>
 /// Convenience class for handling GLSL raw-text shaders from the Assembly resources.

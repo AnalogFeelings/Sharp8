@@ -22,7 +22,8 @@ using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
-using Sharp8.Utilities;
+using Sharp8.Common;
+using Sharp8.Common.Graphics;
 using Size = System.Drawing.Size;
 
 namespace Sharp8.Emulator;

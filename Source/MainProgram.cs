@@ -23,8 +23,9 @@ using OpenTK.Mathematics;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
+using Sharp8.Common;
 using Sharp8.Emulator;
-using Sharp8.Utilities;
+using Sharp8.Common.Graphics;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Sharp8;

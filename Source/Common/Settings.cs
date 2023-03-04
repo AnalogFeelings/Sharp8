@@ -16,7 +16,7 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
-namespace Sharp8;
+namespace Sharp8.Common;
 
 public static class Settings
 {
