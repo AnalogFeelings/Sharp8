@@ -39,25 +39,17 @@ public class EmulatorWindow : GameWindow
     protected override void OnLoad()
     {
         base.OnLoad();
-
-        try
-        {
+        
 #if DEBUG
-            // Initialize OpenGL logging only in Debug configuration.
-            Logger.InitializeGlLogging();
+        // Initialize OpenGL logging only in Debug configuration.
+        Logger.InitializeGlLogging();
 #endif
             
-            Machine.Initialize();
+        Machine.Initialize();
 
-            Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
+        Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
         
-            Logger.Log("The emulator has initialized successfully. Execution will begin.", LogSeverity.Success);
-        }
-        catch (Exception e)
-        {
-            // TODO: Find a better way to have a sort of "centralized" exception handler.
-            Logger.Panic($"An exception happened during emulator initialization.\n{e}");
-        }
+        Logger.Log("The emulator has initialized successfully. Execution will begin.", LogSeverity.Success);
     }
 
     protected override void OnUpdateFrame(FrameEventArgs args)

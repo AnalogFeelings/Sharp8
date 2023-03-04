@@ -25,7 +25,6 @@ using OpenTK.Windowing.Common.Input;
 using OpenTK.Windowing.Desktop;
 using Sharp8.Common;
 using Sharp8.Emulator;
-using Sharp8.Common.Graphics;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Sharp8;
@@ -59,9 +58,16 @@ public class MainProgram
         gameWindowSettings.RenderFrequency = 0;
         gameWindowSettings.UpdateFrequency = 60; // 60Hz
 
-        using (EmulatorWindow emulatorWindow = new EmulatorWindow(gameWindowSettings, windowSettings))
+        try
         {
-            emulatorWindow.Run();
+            using (EmulatorWindow emulatorWindow = new EmulatorWindow(gameWindowSettings, windowSettings))
+            {
+                emulatorWindow.Run();
+            }
+        }
+        catch (Exception e)
+        {
+            Logger.Panic($"An exception has occurred and the emulator will exit.\n{e}");
         }
     }
 
