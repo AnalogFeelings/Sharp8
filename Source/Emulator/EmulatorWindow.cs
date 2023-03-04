@@ -23,7 +23,6 @@ using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
 using OpenTK.Windowing.GraphicsLibraryFramework;
 using Sharp8.Common;
-using Sharp8.Common.Graphics;
 using Size = System.Drawing.Size;
 
 namespace Sharp8.Emulator;
@@ -79,9 +78,9 @@ public class EmulatorWindow : GameWindow
 
     protected override void OnClosing(CancelEventArgs e)
     {
-        Machine.MachineGraphics.Destroy();
-        
         base.OnClosing(e);
+        
+        Machine.MachineGraphics.Destroy();
     }
 
     protected override void OnResize(ResizeEventArgs e)
