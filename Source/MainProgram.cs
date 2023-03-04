@@ -49,6 +49,7 @@ public class MainProgram
             Size = new Vector2i(512, 256),
             Title = "Sharp8",
             Icon = GetWindowIcon(),
+            WindowBorder = WindowBorder.Resizable,
             API = ContextAPI.OpenGL,
             APIVersion = new Version(4, 3),
             Profile = ContextProfile.Core
