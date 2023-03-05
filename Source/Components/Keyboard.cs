@@ -37,22 +37,22 @@ public class Keyboard
     /// </remarks>
     private readonly Dictionary<Keys, int> _Keymap = new Dictionary<Keys, int>()
     {
-        { Keys.D1, 0 }, // 1
-        { Keys.D2, 1 }, // 2
-        { Keys.D3, 2 }, // 3
-        { Keys.D4, 3 }, // C
-        { Keys.Q, 4 }, // 4
-        { Keys.W, 5 }, // 5
-        { Keys.E, 6 }, // 6
-        { Keys.R, 7 }, // D
-        { Keys.A, 8 }, // 7
-        { Keys.S, 9 }, // 8
-        { Keys.D, 10 }, // 9
-        { Keys.F, 11 }, // E
-        { Keys.Z, 12 }, // A
-        { Keys.X, 13 }, // 0
-        { Keys.C, 14 }, // B
-        { Keys.V, 15 } // F
+        { Keys.D1, 0x1 }, // 1
+        { Keys.D2, 0x2 }, // 2
+        { Keys.D3, 0x3 }, // 3
+        { Keys.D4, 0xC }, // C
+        { Keys.Q, 0x4 }, // 4
+        { Keys.W, 0x5 }, // 5
+        { Keys.E, 0x6 }, // 6
+        { Keys.R, 0xD }, // D
+        { Keys.A, 0x7 }, // 7
+        { Keys.S, 0x8 }, // 8
+        { Keys.D, 0x9 }, // 9
+        { Keys.F, 0xE }, // E
+        { Keys.Z, 0xA }, // A
+        { Keys.X, 0x0 }, // 0
+        { Keys.C, 0xB }, // B
+        { Keys.V, 0xF } // F
     };
 
     /// <summary>
