@@ -55,7 +55,7 @@ public class MainProgram
         };
         
         GameWindowSettings gameWindowSettings = GameWindowSettings.Default;
-        gameWindowSettings.RenderFrequency = 0;
+        gameWindowSettings.RenderFrequency = 60;
         gameWindowSettings.UpdateFrequency = 60; // 60Hz
 
         try
