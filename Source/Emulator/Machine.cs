@@ -582,7 +582,13 @@ public class Machine
                 Logger.Log($"Unknown opcode! 0x{CurrentOpcode:X}", LogSeverity.Warning);
                 break;
         }
-        
+    }
+
+    /// <summary>
+    /// Decreases both the delay and sound timer by 1 if their value is over 0.
+    /// </summary>
+    public void DoTimerTick()
+    {
         if (DelayTimer > 0) DelayTimer--;
         if (MachineSound.SoundTimer > 0)
         {

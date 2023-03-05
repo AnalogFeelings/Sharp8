@@ -55,8 +55,14 @@ public class EmulatorWindow : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
+
+        // TODO: Make this configurable in the ImGui settings UI.
+        for (int i = 0; i < 8; i++)
+        {
+            Machine.DoCycle();
+        }
         
-        Machine.DoCycle();
+        Machine.DoTimerTick();
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
