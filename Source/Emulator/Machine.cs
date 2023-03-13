@@ -608,6 +608,10 @@ public class Machine
             
             MachineSound.SoundTimer--;
         }
+        else
+        {
+            MachineSound.StopSound();
+        }
     }
 
     /// <summary>

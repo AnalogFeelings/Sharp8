@@ -32,7 +32,7 @@ public class Sound
     private const int _WAVE_FREQUENCY = 440;
     private const int _WAVE_AMPLITUDE = 32760;
     private const int _BUFFER_DURATION = 1;
-    private const int _BUFFER_SIZE = _BUFFER_DURATION * _SAMPLE_RATE;
+    private const int _BUFFER_SIZE = _BUFFER_DURATION * _SAMPLE_RATE * sizeof(short);
     
     public byte SoundTimer;
 
@@ -71,19 +71,32 @@ public class Sound
     /// </summary>
     public void PlaySound()
     {
-        if (SoundTimer == 0) return;
+        if (AL.GetSourceState(_SoundSource) == ALSourceState.Playing) return;
         
+        // Fill out the buffer with square wave data.
         GenerateSoundFrame();
         
+        // OpenTK doesnt abstract this so I've got to do this myself.
         GCHandle bufferHandle = GCHandle.Alloc(_SoundBuffer, GCHandleType.Pinned);
         IntPtr bufferPointer = bufferHandle.AddrOfPinnedObject();
         
-        AL.BufferData(_SoundBufferId, ALFormat.Mono16, bufferPointer, _SoundBuffer.Length * sizeof(short), _SAMPLE_RATE);
+        AL.BufferData(_SoundBufferId, ALFormat.Mono16, bufferPointer, _BUFFER_SIZE, _SAMPLE_RATE);
+        
+        bufferHandle.Free();
         
         AL.Source(_SoundSource, ALSourcei.Buffer, _SoundBufferId);
         AL.SourcePlay(_SoundSource);
-        
-        bufferHandle.Free();
+    }
+
+    /// <summary>
+    /// Stops any OpenAL source from playing, if they're playing.
+    /// </summary>
+    public void StopSound()
+    {
+        if (AL.GetSourceState(_SoundSource) == ALSourceState.Playing)
+        {
+            AL.SourceStop(_SoundSource);
+        }
     }
 
     /// <summary>
