@@ -26,7 +26,7 @@ namespace Sharp8.Components;
 /// <para/>
 /// Contains the system memory and utility functions.
 /// </summary>
-public class Memory
+public class MemoryComponent
 {
     public const int MEMORY_SIZE = 4096;
     public const int PROGRAM_OFFSET = 512;

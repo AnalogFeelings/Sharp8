@@ -25,7 +25,7 @@ namespace Sharp8.Components;
 /// <para/>
 /// Translates normal PC keycodes into CHIP-8 keycodes.
 /// </summary>
-public class Keyboard
+public class InputComponent
 {
     /// <summary>
     /// Holds the current state of the keyboard in the CHIP-8 machine.

@@ -26,7 +26,7 @@ namespace Sharp8.Components;
 /// <summary>
 /// The sound module of the CHIP-8 system.
 /// </summary>
-public class Sound
+public class SoundComponent
 {
     private const int _SAMPLE_RATE = 44100;
     private const int _WAVE_FREQUENCY = 440;

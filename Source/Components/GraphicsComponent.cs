@@ -28,7 +28,7 @@ namespace Sharp8.Components;
 /// <para/>
 /// Handles displaying to the screen.
 /// </summary>
-public class Graphics
+public class GraphicsComponent
 {
     public const int SCREEN_WIDTH = 64;
     public const int SCREEN_HEIGHT = 32;

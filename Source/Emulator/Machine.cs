@@ -39,12 +39,12 @@ public class Machine
 
     public byte DelayTimer;
 
-    public Memory MachineMemory = new Memory();
-    public Graphics MachineGraphics = new Graphics();
-    public Keyboard MachineKeyboard = new Keyboard();
-    public Sound MachineSound = new Sound();
-
-    public Random MachineRandom = new Random();
+    // Define and initialize all subcomponents.
+    public MemoryComponent Memory = new MemoryComponent();
+    public GraphicsComponent Graphics = new GraphicsComponent();
+    public InputComponent Input = new InputComponent();
+    public SoundComponent Sound = new SoundComponent();
+    public Random Randomizer = new Random();
 
     public readonly byte[] MachineFont = new byte[80]
     {
@@ -69,20 +69,19 @@ public class Machine
     /// <summary>
     /// Initializes the CHIP-8 system.
     /// </summary>
-    /// <exception cref="ArgumentOutOfRangeException">Thrown if a ROM file is too large to fit in the system memory.</exception>
     public void Initialize()
     {
         Logger.Log("Initializing emulator...", LogSeverity.Information);
         
-        ProgramCounter = Memory.PROGRAM_OFFSET;
+        ProgramCounter = MemoryComponent.PROGRAM_OFFSET;
 
         // Load font into RAM.
-        MachineMemory.LoadArray(MachineFont, 0, 0, MachineFont.Length);
+        Memory.LoadArray(MachineFont, 0, 0, MachineFont.Length);
 
         FileInfo programInfo = new FileInfo(Settings.ProgramPath);
-        if (programInfo.Length > Memory.MAX_PROGRAM_SIZE)
+        if (programInfo.Length > MemoryComponent.MAX_PROGRAM_SIZE)
         {
-            Logger.Panic($"The program file must be {Memory.MAX_PROGRAM_SIZE} bytes big at maximum.");
+            Logger.Panic($"The program file must be {MemoryComponent.MAX_PROGRAM_SIZE} bytes big at maximum.");
         }
 
         byte[] programBytes = File.ReadAllBytes(Settings.ProgramPath);
@@ -90,16 +89,16 @@ public class Machine
         Logger.Log("Loading program into memory...", LogSeverity.Information);
         
         // Load program data into RAM.
-        MachineMemory.LoadArray(programBytes, 0, Memory.PROGRAM_OFFSET, programBytes.Length);
+        Memory.LoadArray(programBytes, 0, MemoryComponent.PROGRAM_OFFSET, programBytes.Length);
         
         Logger.Log("Successfully loaded program into emulator memory.", LogSeverity.Success);
         Logger.Log("Initializing graphics component...", LogSeverity.Information);
 
-        MachineGraphics.Initialize();
+        Graphics.Initialize();
         
         Logger.Log("Initializing sound component...", LogSeverity.Information);
         
-        MachineSound.Initialize();
+        Sound.Initialize();
     }
 
     /// <summary>
@@ -107,7 +106,7 @@ public class Machine
     /// </summary>
     public void DoCycle()
     {
-        CurrentOpcode = (ushort)(MachineMemory[ProgramCounter] << 8 | MachineMemory[ProgramCounter + 1]);
+        CurrentOpcode = (ushort)(Memory[ProgramCounter] << 8 | Memory[ProgramCounter + 1]);
 
         switch (CurrentOpcode & 0xF000)
         {
@@ -117,7 +116,7 @@ public class Machine
                 {
                     case 0x0000: // 0x00E0 - Clear screen.
                     {
-                        MachineGraphics.Reset();
+                        Graphics.Reset();
 
                         ProgramCounter += 2;
 
@@ -379,7 +378,7 @@ public class Machine
                 int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
                 byte value = (byte)(CurrentOpcode & 0x00FF);
 
-                Registers[xRegisterIndex] = (byte)(MachineRandom.Next(0, byte.MaxValue + 1) & value);
+                Registers[xRegisterIndex] = (byte)(Randomizer.Next(0, byte.MaxValue + 1) & value);
 
                 ProgramCounter += 2;
 
@@ -402,22 +401,22 @@ public class Machine
 
                 for (int y = 0; y < spriteHeight; y++)
                 {
-                    spritePixel = MachineMemory[Index + y];
+                    spritePixel = Memory[Index + y];
                     
                     for (int x = 0; x < 8; x++)
                     {
                         if ((spritePixel & (0x80 >> x)) != 0)
                         {
-                            int pixelPosition = Graphics.SCREEN_WIDTH * ((y + spriteY) % Graphics.SCREEN_HEIGHT) + (x + spriteX) % Graphics.SCREEN_WIDTH;
+                            int pixelPosition = GraphicsComponent.SCREEN_WIDTH * ((y + spriteY) % GraphicsComponent.SCREEN_HEIGHT) + (x + spriteX) % GraphicsComponent.SCREEN_WIDTH;
 
-                            if (MachineGraphics.Framebuffer[pixelPosition] == 1)
+                            if (Graphics.Framebuffer[pixelPosition] == 1)
                                 Registers[0xF] = 1;
-                            MachineGraphics.Framebuffer[pixelPosition] ^= 1;
+                            Graphics.Framebuffer[pixelPosition] ^= 1;
                         }
                     }
                 }
 
-                MachineGraphics.DrawFlag = true;
+                Graphics.DrawFlag = true;
                 ProgramCounter += 2;
 
                 break;
@@ -430,7 +429,7 @@ public class Machine
                     {
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
 
-                        if (MachineKeyboard.VirtualState[Registers[xRegisterIndex]] != 0)
+                        if (Input.VirtualState[Registers[xRegisterIndex]] != 0)
                             ProgramCounter += 4;
                         else
                             ProgramCounter += 2;
@@ -441,7 +440,7 @@ public class Machine
                     {
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
 
-                        if (MachineKeyboard.VirtualState[Registers[xRegisterIndex]] == 0)
+                        if (Input.VirtualState[Registers[xRegisterIndex]] == 0)
                             ProgramCounter += 4;
                         else
                             ProgramCounter += 2;
@@ -477,7 +476,7 @@ public class Machine
 
                         for (byte i = 0; i < 16; i++)
                         {
-                            if (MachineKeyboard.VirtualState[i] != 0)
+                            if (Input.VirtualState[i] != 0)
                             {
                                 Registers[xRegisterIndex] = i;
                                 keyPressed = true;
@@ -504,7 +503,7 @@ public class Machine
                     {
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
 
-                        MachineSound.SoundTimer = Registers[xRegisterIndex];
+                        Sound.SoundTimer = Registers[xRegisterIndex];
 
                         ProgramCounter += 2;
 
@@ -537,9 +536,9 @@ public class Machine
                     {
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
 
-                        MachineMemory[Index] = (byte)(Registers[xRegisterIndex] / 100 % 10);
-                        MachineMemory[Index + 1] = (byte)(Registers[xRegisterIndex] / 10 % 10);
-                        MachineMemory[Index + 2] = (byte)(Registers[xRegisterIndex] % 10);
+                        Memory[Index] = (byte)(Registers[xRegisterIndex] / 100 % 10);
+                        Memory[Index + 1] = (byte)(Registers[xRegisterIndex] / 10 % 10);
+                        Memory[Index + 2] = (byte)(Registers[xRegisterIndex] % 10);
 
                         ProgramCounter += 2;
 
@@ -552,7 +551,7 @@ public class Machine
 
                         for (int i = 0; i <= xRegisterIndex; i++)
                         {
-                            MachineMemory[Index + i] = Registers[i];
+                            Memory[Index + i] = Registers[i];
                         }
 
                         Index += (ushort)(xRegisterIndex + 1);
@@ -567,7 +566,7 @@ public class Machine
 
                         for (int i = 0; i <= xRegisterIndex; i++)
                         {
-                            Registers[i] = MachineMemory[Index + i];
+                            Registers[i] = Memory[Index + i];
                         }
                         
                         Index += (ushort)(xRegisterIndex + 1);
@@ -602,15 +601,15 @@ public class Machine
     /// </summary>
     public void DoSoundTick()
     {
-        if (MachineSound.SoundTimer > 0)
+        if (Sound.SoundTimer > 0)
         {
-            MachineSound.PlaySound();
+            Sound.PlaySound();
             
-            MachineSound.SoundTimer--;
+            Sound.SoundTimer--;
         }
         else
         {
-            MachineSound.StopSound();
+            Sound.StopSound();
         }
     }
 
@@ -619,7 +618,7 @@ public class Machine
     /// </summary>
     public void Destroy()
     {
-        MachineGraphics.Destroy();
-        MachineSound.Destroy();
+        Graphics.Destroy();
+        Sound.Destroy();
     }
 }

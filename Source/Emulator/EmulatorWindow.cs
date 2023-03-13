@@ -70,7 +70,7 @@ public class EmulatorWindow : GameWindow
     {
         base.OnRenderFrame(args);
         
-        bool didRender = Machine.MachineGraphics.Render();
+        bool didRender = Machine.Graphics.Render();
         
         if(didRender) SwapBuffers();
     }
@@ -96,13 +96,13 @@ public class EmulatorWindow : GameWindow
         if(e.Key == Keys.Escape)
             Close();
         
-        Machine.MachineKeyboard.ProcessEvent(e.Key, true);
+        Machine.Input.ProcessEvent(e.Key, true);
     }
 
     protected override void OnKeyUp(KeyboardKeyEventArgs e)
     {
         base.OnKeyUp(e);
         
-        Machine.MachineKeyboard.ProcessEvent(e.Key, false);
+        Machine.Input.ProcessEvent(e.Key, false);
     }
 }
