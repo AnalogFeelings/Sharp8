@@ -63,6 +63,7 @@ public class EmulatorWindow : GameWindow
         }
         
         Machine.DoTimerTick();
+        Machine.DoSoundTick();
     }
 
     protected override void OnRenderFrame(FrameEventArgs args)
@@ -78,7 +79,7 @@ public class EmulatorWindow : GameWindow
     {
         base.OnClosing(e);
         
-        Machine.MachineGraphics.Destroy();
+        Machine.Destroy();
     }
 
     protected override void OnResize(ResizeEventArgs e)

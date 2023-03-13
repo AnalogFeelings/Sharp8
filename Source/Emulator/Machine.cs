@@ -96,6 +96,10 @@ public class Machine
         Logger.Log("Initializing graphics component...", LogSeverity.Information);
 
         MachineGraphics.Initialize();
+        
+        Logger.Log("Initializing sound component...", LogSeverity.Information);
+        
+        MachineSound.Initialize();
     }
 
     /// <summary>
@@ -585,15 +589,33 @@ public class Machine
     }
 
     /// <summary>
-    /// Decreases both the delay and sound timer by 1 if their value is over 0.
+    /// Decreases the delay timer by 1 if its value is over 0.
     /// </summary>
     public void DoTimerTick()
     {
-        if (DelayTimer > 0) DelayTimer--;
+        if (DelayTimer > 0) 
+            DelayTimer--;
+    }
+
+    /// <summary>
+    /// Plays sound if the sound timer's value is over 0, and decreases it by 1.
+    /// </summary>
+    public void DoSoundTick()
+    {
         if (MachineSound.SoundTimer > 0)
         {
-            // TODO: Beep here.
+            MachineSound.PlaySound();
+            
             MachineSound.SoundTimer--;
         }
+    }
+
+    /// <summary>
+    /// Pauses execution and destroys any subcomponent that needs it.
+    /// </summary>
+    public void Destroy()
+    {
+        MachineGraphics.Destroy();
+        MachineSound.Destroy();
     }
 }
