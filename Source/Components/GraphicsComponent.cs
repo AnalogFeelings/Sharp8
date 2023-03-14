@@ -36,9 +36,6 @@ public class GraphicsComponent
     public bool DrawFlag;
     
     public uint[] Framebuffer = new uint[SCREEN_WIDTH * SCREEN_HEIGHT];
-    
-    #region OpenGL
-    
     private byte[,,] _TextureData = new byte[SCREEN_HEIGHT, SCREEN_WIDTH, 3];
 
     private int _TextureHandle;
@@ -62,8 +59,6 @@ public class GraphicsComponent
         0, 1, 3,
         1, 2, 3
     };
-    
-    #endregion
 
     /// <summary>
     /// Initializes the graphics module.
