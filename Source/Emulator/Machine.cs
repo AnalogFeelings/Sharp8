@@ -19,7 +19,6 @@
 using Matcha;
 using Sharp8.Common;
 using Sharp8.Components;
-using Sharp8.Common.Graphics;
 
 namespace Sharp8.Emulator;
 
@@ -264,16 +263,11 @@ public class Machine
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
                         int yRegisterIndex = (CurrentOpcode & 0x00F0) >> 4;
 
-                        // Imagine VY is 56, and VX is 200. Obviously, if we do 200 + 56, it will overflow since
-                        // the max value a byte can hold is 255.
-                        // byte.MaxValue - VX is meant to get the "offset" until it overflows, which in this case,
-                        // is 55. 56 is greater than 55, so it means it will overflow. So we set the carry flag.
-                        if (Registers[yRegisterIndex] > (byte.MaxValue - Registers[xRegisterIndex]))
-                            Registers[0xF] = 1;
-                        else
-                            Registers[0xF] = 0;
+                        // Abuse the fact C# casts byte + byte to int and check if it is larger than 255.
+                        int flag = (Registers[xRegisterIndex] + Registers[yRegisterIndex] > 0xFF) ? 1 : 0;
 
                         Registers[xRegisterIndex] += Registers[yRegisterIndex];
+                        Registers[0xF] = (byte)flag;
 
                         ProgramCounter += 2;
 
@@ -284,14 +278,11 @@ public class Machine
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
                         int yRegisterIndex = (CurrentOpcode & 0x00F0) >> 4;
 
-                        // Imagine VY is 56, and VX is 55. Obviously, if we do 55 - 56, it will underflow.
-                        // If it underflows, we set the carry flag to 0.
-                        if (Registers[yRegisterIndex] > Registers[xRegisterIndex])
-                            Registers[0xF] = 0;
-                        else
-                            Registers[0xF] = 1;
+                        // Check if a borrow occurs by seeing if VX is larger than VY.
+                        int flag = (Registers[xRegisterIndex] >= Registers[yRegisterIndex]) ? 1 : 0;
 
                         Registers[xRegisterIndex] -= Registers[yRegisterIndex];
+                        Registers[0xF] = (byte)flag;
 
                         ProgramCounter += 2;
 
@@ -300,9 +291,12 @@ public class Machine
                     case 0x0006: // 0x8XY6 - Stores the least significant bit of VX in VF and then shifts VX to the right by 1.
                     {
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
+                        int yRegisterIndex = (CurrentOpcode & 0x00F0) >> 4;
 
-                        Registers[0xF] = (byte)(Registers[xRegisterIndex] & 0x1);
-                        Registers[xRegisterIndex] >>= 1;
+                        int flag = ((Registers[yRegisterIndex] & 0b00000001) > 0) ? 1 : 0;
+                        
+                        Registers[xRegisterIndex] = (byte)(Registers[yRegisterIndex] >> 1);
+                        Registers[0xF] = (byte)flag;
                         
                         ProgramCounter += 2;
 
@@ -313,13 +307,11 @@ public class Machine
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
                         int yRegisterIndex = (CurrentOpcode & 0x00F0) >> 4;
                         
-                        // Borrow checking.
-                        if (Registers[xRegisterIndex] > Registers[yRegisterIndex])
-                            Registers[0xF] = 0;
-                        else
-                            Registers[0xF] = 1;
+                        // Check if a borrow occurs by seeing if VY is larger than VX.
+                        int flag = (Registers[yRegisterIndex] >= Registers[xRegisterIndex]) ? 1 : 0;
 
                         Registers[xRegisterIndex] = (byte)(Registers[yRegisterIndex] - Registers[xRegisterIndex]);
+                        Registers[0xF] = (byte)flag;
                         
                         ProgramCounter += 2;
 
@@ -328,9 +320,12 @@ public class Machine
                     case 0x000E: // 0x8XYE - Stores the most significant bit of VX in VF and then shifts VX to the left by 1.
                     {
                         int xRegisterIndex = (CurrentOpcode & 0x0F00) >> 8;
+                        int yRegisterIndex = (CurrentOpcode & 0x00F0) >> 4;
 
-                        Registers[0xF] = (byte)(Registers[xRegisterIndex] >> 7);
-                        Registers[xRegisterIndex] <<= 1;
+                        int flag = ((Registers[yRegisterIndex] & 0b10000000) > 0) ? 1 : 0;
+
+                        Registers[xRegisterIndex] = (byte)(Registers[yRegisterIndex] << 1);
+                        Registers[0xF] = (byte)flag;
                         
                         ProgramCounter += 2;
 
