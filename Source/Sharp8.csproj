@@ -11,14 +11,15 @@
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-      <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-      <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+      <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="ImGui.NET" Version="1.89.4" />
       <PackageReference Include="MatchaLogger" Version="1.2.1" />
       <PackageReference Include="OpenTK" Version="4.7.7" />
       <PackageReference Include="SixLabors.ImageSharp" Version="3.0.0" />
@@ -38,6 +39,10 @@
       <EmbeddedResource Include="Resources\Shaders\screen.frag" />
       <None Remove="Resources\Shaders\screen.vert" />
       <EmbeddedResource Include="Resources\Shaders\screen.vert" />
+      <None Remove="Resources\Shaders\imgui.vert" />
+      <EmbeddedResource Include="Resources\Shaders\imgui.vert" />
+      <None Remove="Resources\Shaders\imgui.frag" />
+      <EmbeddedResource Include="Resources\Shaders\imgui.frag" />
     </ItemGroup>
 
 </Project>

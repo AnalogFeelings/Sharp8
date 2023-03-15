@@ -127,20 +127,21 @@ public class GraphicsComponent
     /// <summary>
     /// Renders to the screen if <see cref="DrawFlag"/> is true.
     /// </summary>
-    public bool Render()
+    public void Render()
     {
-        if (!DrawFlag) return false;
-
-        for (int y = 0; y < SCREEN_HEIGHT; y++)
+        if (DrawFlag)
         {
-            for (int x = 0; x < SCREEN_WIDTH; x++)
+            for (int y = 0; y < SCREEN_HEIGHT; y++)
             {
-                int pixelIndex = y * SCREEN_WIDTH + x;
+                for (int x = 0; x < SCREEN_WIDTH; x++)
+                {
+                    int pixelIndex = y * SCREEN_WIDTH + x;
 
-                if (Framebuffer[pixelIndex] == 0)
-                    _TextureData[y, x, 0] = _TextureData[y, x, 1] = _TextureData[y, x, 2] = 0;
-                else
-                    _TextureData[y, x, 0] = _TextureData[y, x, 1] = _TextureData[y, x, 2] = 255;
+                    if (Framebuffer[pixelIndex] == 0)
+                        _TextureData[y, x, 0] = _TextureData[y, x, 1] = _TextureData[y, x, 2] = 0;
+                    else
+                        _TextureData[y, x, 0] = _TextureData[y, x, 1] = _TextureData[y, x, 2] = 255;
+                }
             }
         }
         
@@ -157,7 +158,6 @@ public class GraphicsComponent
         GL.DrawElements(PrimitiveType.Triangles, _QuadIndices.Length, DrawElementsType.UnsignedInt, 0);
 
         DrawFlag = false;
-        return true;
     }
 
     /// <summary>

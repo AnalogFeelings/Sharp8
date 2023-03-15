@@ -17,12 +17,13 @@
 #endregion
 
 using System.ComponentModel;
+using ImGuiNET;
 using Matcha;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
-using OpenTK.Windowing.GraphicsLibraryFramework;
 using Sharp8.Common;
+using Sharp8.Common.Graphics;
 using Size = System.Drawing.Size;
 
 namespace Sharp8.Emulator;
@@ -30,6 +31,7 @@ namespace Sharp8.Emulator;
 public class EmulatorWindow : GameWindow
 {
     public Machine Machine = new Machine();
+    public ImGuiHelper ImGuiHelper = default!; // Prevent nullable initialization warning.
     
     public EmulatorWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
     {
@@ -44,7 +46,8 @@ public class EmulatorWindow : GameWindow
         // Initialize OpenGL logging only in Debug configuration.
         Logger.InitializeGlLogging();
 #endif
-            
+        
+        ImGuiHelper = new ImGuiHelper(ClientSize.X, ClientSize.Y);
         Machine.Initialize();
 
         Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
@@ -70,15 +73,22 @@ public class EmulatorWindow : GameWindow
     {
         base.OnRenderFrame(args);
         
-        bool didRender = Machine.Graphics.Render();
+        // Counter-intuitively, this should be here instead of OnUpdateFrame.
+        // If placed in OnUpdateFrame, input issues arise.
+        ImGuiHelper.Update(this, (float)args.Time);
+        Machine.Graphics.Render();
         
-        if(didRender) SwapBuffers();
+        ImGui.ShowDemoWindow();
+        ImGuiHelper.Render();
+        
+        SwapBuffers();
     }
 
     protected override void OnClosing(CancelEventArgs e)
     {
         base.OnClosing(e);
         
+        ImGuiHelper.Dispose();
         Machine.Destroy();
     }
 
@@ -87,15 +97,15 @@ public class EmulatorWindow : GameWindow
         base.OnResize(e);
         
         GL.Viewport(new Size(e.Size.X, e.Size.Y));
+        ImGuiHelper.Resize(e.Size.X, e.Size.Y);
     }
 
     protected override void OnKeyDown(KeyboardKeyEventArgs e)
     {
         base.OnKeyDown(e);
-        
-        if(e.Key == Keys.Escape)
-            Close();
-        
+
+        if (ImGuiHelper.WantsKeyboardInput()) return;
+
         Machine.Input.ProcessEvent(e.Key, true);
     }
 
@@ -103,6 +113,24 @@ public class EmulatorWindow : GameWindow
     {
         base.OnKeyUp(e);
         
+        if (ImGuiHelper.WantsKeyboardInput()) return;
+        
         Machine.Input.ProcessEvent(e.Key, false);
+    }
+
+    protected override void OnTextInput(TextInputEventArgs e)
+    {
+        base.OnTextInput(e);
+        
+        if (!ImGuiHelper.WantsKeyboardInput()) return;
+        
+        ImGuiHelper.PressChar((char)e.Unicode);
+    }
+
+    protected override void OnMouseWheel(MouseWheelEventArgs e)
+    {
+        base.OnMouseWheel(e);
+        
+        ImGuiHelper.MouseScroll(e.Offset);
     }
 }

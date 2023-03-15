@@ -154,6 +154,18 @@ public class Shader : IDisposable
         GL.Uniform3(_UniformLocations[Name], Value);
     }
     
+    /// <summary>
+    /// Sets a <see cref="Matrix4"/> uniform on the shader.
+    /// </summary>
+    /// <param name="Name">The name of the uniform.</param>
+    /// <param name="Value">The value to set the uniform to.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if there is no uniform named <paramref name="Name"/>.</exception>
+    public void SetUniform(string Name, Matrix4 Value)
+    {
+        if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
+        GL.UniformMatrix4(_UniformLocations[Name], false, ref Value);
+    }
+    
     public void Dispose()
     {
         Dispose(true);
