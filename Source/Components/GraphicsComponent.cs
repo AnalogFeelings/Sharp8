@@ -28,7 +28,7 @@ namespace Sharp8.Components;
 /// <para/>
 /// Handles displaying to the screen.
 /// </summary>
-public class GraphicsComponent
+public sealed class GraphicsComponent : IDisposable
 {
     public const int SCREEN_WIDTH = 64;
     public const int SCREEN_HEIGHT = 32;
@@ -163,7 +163,7 @@ public class GraphicsComponent
     /// <summary>
     /// Disposes any resource that needs it.
     /// </summary>
-    public void Destroy()
+    public void Dispose()
     {
         GL.DeleteVertexArrays(1, ref _QuadVao);
         GL.DeleteBuffers(1, ref _QuadVbo);

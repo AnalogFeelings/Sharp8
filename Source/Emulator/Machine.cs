@@ -613,7 +613,7 @@ public class Machine
     /// </summary>
     public void Destroy()
     {
-        Graphics.Destroy();
+        Graphics.Dispose();
         Sound.Destroy();
     }
 }
