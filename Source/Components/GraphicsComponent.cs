@@ -35,16 +35,16 @@ public class GraphicsComponent
     
     public bool DrawFlag;
     
-    public uint[] Framebuffer = new uint[SCREEN_WIDTH * SCREEN_HEIGHT];
-    private byte[,,] _TextureData = new byte[SCREEN_HEIGHT, SCREEN_WIDTH, 3];
+    public readonly uint[] Framebuffer = new uint[SCREEN_WIDTH * SCREEN_HEIGHT];
+    private readonly byte[,,] _TextureData = new byte[SCREEN_HEIGHT, SCREEN_WIDTH, 3];
 
     private int _TextureHandle;
     
-    private uint _QuadVbo;
-    private uint _QuadVao;
-    private uint _QuadEbo;
+    private int _QuadVao;
+    private int _QuadVbo;
+    private int _QuadEbo;
 
-    private Shader? _QuadShader;
+    private Shader _QuadShader = default!;
 
     private readonly float[] _QuadVertices = new float[20]
     {
@@ -68,9 +68,9 @@ public class GraphicsComponent
         Logger.Log("Initializing OpenGL buffer objects...", LogSeverity.Debug);
         
         // Initialize buffers.
-        GL.GenVertexArrays(1, out _QuadVao);
-        GL.GenBuffers(1, out _QuadVbo);
-        GL.GenBuffers(1, out _QuadEbo);
+        _QuadVao = GL.GenVertexArray();
+        _QuadVbo = GL.GenBuffer();
+        _QuadEbo = GL.GenBuffer();
         
         GL.BindVertexArray(_QuadVao);
         
@@ -153,7 +153,7 @@ public class GraphicsComponent
         GL.Clear(ClearBufferMask.ColorBufferBit);
         
         GL.BindVertexArray(_QuadVao);
-        _QuadShader!.Use();
+        _QuadShader.Use();
         
         GL.DrawElements(PrimitiveType.Triangles, _QuadIndices.Length, DrawElementsType.UnsignedInt, 0);
 
@@ -169,7 +169,7 @@ public class GraphicsComponent
         GL.DeleteBuffers(1, ref _QuadVbo);
         GL.DeleteBuffers(1, ref _QuadEbo);
 
-        _QuadShader?.Dispose();
+        _QuadShader.Dispose();
         
         GL.DeleteTexture(_TextureHandle);
     }
