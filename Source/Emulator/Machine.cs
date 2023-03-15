@@ -614,6 +614,6 @@ public class Machine
     public void Destroy()
     {
         Graphics.Dispose();
-        Sound.Destroy();
+        Sound.Dispose();
     }
 }

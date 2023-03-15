@@ -26,7 +26,7 @@ namespace Sharp8.Components;
 /// <summary>
 /// The sound module of the CHIP-8 system.
 /// </summary>
-public class SoundComponent
+public sealed class SoundComponent : IDisposable
 {
     private const int _SAMPLE_RATE = 44100;
     private const int _WAVE_FREQUENCY = 440;
@@ -102,7 +102,7 @@ public class SoundComponent
     /// <summary>
     /// Disposes all the OpenAL objects.
     /// </summary>
-    public void Destroy()
+    public void Dispose()
     {
         AL.DeleteSource(_SoundSource);
         AL.DeleteBuffer(_SoundBufferId);
