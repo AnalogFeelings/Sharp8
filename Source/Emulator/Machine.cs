@@ -25,7 +25,7 @@ namespace Sharp8.Emulator;
 /// <summary>
 /// The CPU of the CHIP-8 system.
 /// </summary>
-public class Machine
+public sealed class Machine : IDisposable
 {
     public ushort CurrentOpcode;
 
@@ -611,7 +611,7 @@ public class Machine
     /// <summary>
     /// Pauses execution and destroys any subcomponent that needs it.
     /// </summary>
-    public void Destroy()
+    public void Dispose()
     {
         Graphics.Dispose();
         Sound.Dispose();

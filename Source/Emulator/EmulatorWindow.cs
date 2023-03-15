@@ -89,7 +89,7 @@ public class EmulatorWindow : GameWindow
         base.OnClosing(e);
         
         ImGuiHelper.Dispose();
-        Machine.Destroy();
+        Machine.Dispose();
     }
 
     protected override void OnResize(ResizeEventArgs e)
