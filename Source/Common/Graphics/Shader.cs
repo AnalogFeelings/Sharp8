@@ -42,6 +42,13 @@ public class Shader : IDisposable
     /// <remarks>
     /// This can only load from integrated resources.
     /// </remarks>
+    /// <exception cref="FileNotFoundException">
+    /// Thrown if either <paramref name="VertexFilename"/> or <paramref name="FragmentFilename"/> are not found
+    /// inside the assembly resources.
+    /// </exception>
+    /// <exception cref="Exception">
+    /// Thrown if there is a compilation or linking error with any shader.
+    /// </exception>
     public Shader(string VertexFilename, string FragmentFilename)
     {
         Assembly currentAssembly = Assembly.GetExecutingAssembly();
