@@ -77,15 +77,15 @@ public class Shader : IDisposable
         int fragmentShader = GL.CreateShader(ShaderType.FragmentShader);
         GL.ShaderSource(fragmentShader, fragSource);
 
-        GL.CompileShader(vertexShader);
-        GL.CompileShader(fragmentShader);
+        CompileShader(vertexShader);
+        CompileShader(fragmentShader);
 
         _ShaderHandle = GL.CreateProgram();
 
         GL.AttachShader(_ShaderHandle, vertexShader);
         GL.AttachShader(_ShaderHandle, fragmentShader);
 
-        GL.LinkProgram(_ShaderHandle);
+        LinkProgram();
 
         GL.DetachShader(_ShaderHandle, vertexShader);
         GL.DetachShader(_ShaderHandle, fragmentShader);
@@ -108,6 +108,44 @@ public class Shader : IDisposable
     ~Shader()
     {
         GL.DeleteProgram(_ShaderHandle);
+    }
+
+    /// <summary>
+    /// Compiles a shader.
+    /// </summary>
+    /// <param name="Shader">The ID of the shader to compile.</param>
+    /// <exception cref="Exception">Thrown if there is a compilation error.</exception>
+    private void CompileShader(int Shader)
+    {
+        GL.CompileShader(Shader);
+        
+        int resultCode;
+        GL.GetShader(Shader, ShaderParameter.CompileStatus, out resultCode);
+        
+        if (resultCode != 1)
+        {
+            string log = GL.GetShaderInfoLog(Shader);
+            
+            throw new Exception($"Error occurred whilst compiling fragment shader:\n{log}");
+        }
+    }
+
+    /// <summary>
+    /// Links the shader program.
+    /// </summary>
+    /// <exception cref="Exception">Thrown if there is a linker error.</exception>
+    private void LinkProgram()
+    {
+        GL.LinkProgram(_ShaderHandle);
+        
+        int resultCode;
+        GL.GetProgram(_ShaderHandle, GetProgramParameterName.LinkStatus, out resultCode);
+        if (resultCode != 1)
+        {
+            string log = GL.GetProgramInfoLog(_ShaderHandle);
+            
+            throw new Exception($"Error occurred whilst linking shader:\n{log}");
+        }
     }
     
     /// <summary>
@@ -141,6 +179,18 @@ public class Shader : IDisposable
         if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
         GL.Uniform1(_UniformLocations[Name], Value);
     }
+    
+    /// <summary>
+    /// Sets a <see cref="Vector4"/> uniform on the shader.
+    /// </summary>
+    /// <param name="Name">The name of the uniform.</param>
+    /// <param name="Value">The value to set the uniform to.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if there is no uniform named <paramref name="Name"/>.</exception>
+    public void SetUniform(string Name, Vector4 Value)
+    {
+        if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
+        GL.Uniform4(_UniformLocations[Name], Value);
+    }
 
     /// <summary>
     /// Sets a <see cref="Vector3"/> uniform on the shader.
@@ -152,6 +202,18 @@ public class Shader : IDisposable
     {
         if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
         GL.Uniform3(_UniformLocations[Name], Value);
+    }
+    
+    /// <summary>
+    /// Sets a <see cref="Vector2"/> uniform on the shader.
+    /// </summary>
+    /// <param name="Name">The name of the uniform.</param>
+    /// <param name="Value">The value to set the uniform to.</param>
+    /// <exception cref="KeyNotFoundException">Thrown if there is no uniform named <paramref name="Name"/>.</exception>
+    public void SetUniform(string Name, Vector2 Value)
+    {
+        if (!_UniformLocations.ContainsKey(Name)) throw new KeyNotFoundException($"The shader has no uniform named \"{Name}\".");
+        GL.Uniform2(_UniformLocations[Name], Value);
     }
     
     /// <summary>
