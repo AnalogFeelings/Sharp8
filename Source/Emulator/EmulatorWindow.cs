@@ -17,11 +17,11 @@
 #endregion
 
 using System.ComponentModel;
-using ImGuiNET;
 using Matcha;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
 using OpenTK.Windowing.Desktop;
+using OpenTK.Windowing.GraphicsLibraryFramework;
 using Sharp8.Common;
 using Sharp8.Common.Graphics;
 using Size = System.Drawing.Size;
@@ -32,6 +32,8 @@ public class EmulatorWindow : GameWindow
 {
     public Machine Machine = new Machine();
     public ImGuiHelper ImGuiHelper = default!; // Prevent nullable initialization warning.
+
+    public bool IsClosing; // Workaround for annoying panic on closing.
     
     public EmulatorWindow(GameWindowSettings gameWindowSettings, NativeWindowSettings nativeWindowSettings) : base(gameWindowSettings, nativeWindowSettings)
     {
@@ -58,6 +60,9 @@ public class EmulatorWindow : GameWindow
     protected override void OnUpdateFrame(FrameEventArgs args)
     {
         base.OnUpdateFrame(args);
+        
+        if (IsClosing)
+            return;
 
         // TODO: Make this configurable in the ImGui settings UI.
         for (int i = 0; i < 8; i++)
@@ -72,6 +77,9 @@ public class EmulatorWindow : GameWindow
     protected override void OnRenderFrame(FrameEventArgs args)
     {
         base.OnRenderFrame(args);
+
+        if (IsClosing)
+            return;
         
         // Counter-intuitively, this should be here instead of OnUpdateFrame.
         // If placed in OnUpdateFrame, input issues arise.
@@ -87,6 +95,8 @@ public class EmulatorWindow : GameWindow
     protected override void OnClosing(CancelEventArgs e)
     {
         base.OnClosing(e);
+
+        IsClosing = true;
         
         ImGuiHelper.Dispose();
         Machine.Dispose();
