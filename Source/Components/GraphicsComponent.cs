@@ -1,6 +1,6 @@
 ﻿#region License Information (GPL v3.0)
 // Sharp8 - A very simple CHIP-8 emulator based on OpenGL.
-// Copyright (C) 2023 AestheticalZ
+// Copyright (C) 2023 Analog Feelings
 // 
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -138,9 +138,17 @@ public sealed class GraphicsComponent : IDisposable
                     int pixelIndex = y * SCREEN_WIDTH + x;
 
                     if (Framebuffer[pixelIndex] == 0)
-                        _TextureData[y, x, 0] = _TextureData[y, x, 1] = _TextureData[y, x, 2] = 0;
+                    {
+                        _TextureData[y, x, 0] = (byte)(Settings.BackgroundColor.X * 255);
+                        _TextureData[y, x, 1] = (byte)(Settings.BackgroundColor.Y * 255);
+                        _TextureData[y, x, 2] = (byte)(Settings.BackgroundColor.Z * 255);
+                    }
                     else
-                        _TextureData[y, x, 0] = _TextureData[y, x, 1] = _TextureData[y, x, 2] = 255;
+                    {
+                        _TextureData[y, x, 0] = (byte)(Settings.ForegroundColor.X * 255);
+                        _TextureData[y, x, 1] = (byte)(Settings.ForegroundColor.Y * 255);
+                        _TextureData[y, x, 2] = (byte)(Settings.ForegroundColor.Z * 255);
+                    }
                 }
             }
         }

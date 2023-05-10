@@ -1,6 +1,6 @@
 ﻿#region License Information (GPL v3.0)
 // Sharp8 - A very simple CHIP-8 emulator based on OpenGL.
-// Copyright (C) 2023 AestheticalZ
+// Copyright (C) 2023 Analog Feelings
 // 
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -16,9 +16,19 @@
 //  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 #endregion
 
+using System.Numerics;
+
 namespace Sharp8.Common;
 
 public static class Settings
 {
     public static string ProgramPath = string.Empty;
+
+    public static Vector3 BackgroundColor = new Vector3(0, 0, 0);
+    public static Vector3 ForegroundColor = new Vector3(1, 1, 1);
+
+    public static int CyclesPerFrame = 8;
+    public static bool EnableSound = true;
+
+    public static int SoundVolume = 100;
 }

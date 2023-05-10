@@ -1,6 +1,6 @@
 ﻿#region License Information (GPL v3.0)
 // Sharp8 - A very simple CHIP-8 emulator based on OpenGL.
-// Copyright (C) 2023 AestheticalZ
+// Copyright (C) 2023 Analog Feelings
 // 
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU General Public License as published by
@@ -17,6 +17,7 @@
 #endregion
 
 using System.ComponentModel;
+using ImGuiNET;
 using Matcha;
 using OpenTK.Graphics.OpenGL4;
 using OpenTK.Windowing.Common;
@@ -32,6 +33,7 @@ public class EmulatorWindow : GameWindow
 {
     public Machine Machine = new Machine();
     public ImGuiHelper ImGuiHelper = default!; // Prevent nullable initialization warning.
+    public GuiManager GuiManager = default!;
 
     public bool IsClosing; // Workaround for annoying panic on closing.
     
@@ -50,6 +52,8 @@ public class EmulatorWindow : GameWindow
 #endif
         
         ImGuiHelper = new ImGuiHelper(ClientSize.X, ClientSize.Y);
+        GuiManager = new GuiManager(ref Machine);
+        
         Machine.Initialize();
 
         Title = "Sharp8 - " + Path.GetFileName(Settings.ProgramPath);
@@ -65,7 +69,7 @@ public class EmulatorWindow : GameWindow
             return;
 
         // TODO: Make this configurable in the ImGui settings UI.
-        for (int i = 0; i < 8; i++)
+        for (int i = 0; i < Settings.CyclesPerFrame; i++)
         {
             Machine.DoCycle();
         }
@@ -86,7 +90,7 @@ public class EmulatorWindow : GameWindow
         ImGuiHelper.Update(this, (float)args.Time);
         Machine.Graphics.Render();
         
-        ImGui.ShowDemoWindow();
+        GuiManager.ShowWindow();
         ImGuiHelper.Render();
         
         SwapBuffers();
@@ -115,6 +119,12 @@ public class EmulatorWindow : GameWindow
         base.OnKeyDown(e);
 
         if (ImGuiHelper.WantsKeyboardInput()) return;
+
+        if (e.Key == Keys.Tab)
+        {
+            GuiManager.IsVisible = !GuiManager.IsVisible;
+            return;
+        }
 
         Machine.Input.ProcessEvent(e.Key, true);
     }
